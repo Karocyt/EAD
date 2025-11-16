@@ -14,7 +14,7 @@ Puis un plan sans le texte des développements ni les transitions.
 
 Chaque titre sert ouvertement la problématique (Si à la lecture d'un titre on voit pas directement en quoi ça va dans le sens de la problématique, c'est pas top). Et de la même manière, chaque sous-titre sert son titre. Là dessus la structure du cours de Grandemange est pas mal. Ses titres sont du cours, donc souvent non qualifiés, mais l'architecture fait bien ressortir la dépendance entre titres et sous-titres, avec les chapeaux qui introduisent et tout ça.
 
-Les titres doivent donc être qualifiés. On ne parle pas de "*Les pouvoirs du Président*" mais de "*Des pouvoirs présidentiels* ***renforcés***", par exemple, différence entre une dissertation et un cours.
+Les titres doivent donc être qualifiés. On ne parle pas de "*Les pouvoirs du Président*" mais de "*Des pouvoirs présidentiels* ***renforcés***", par exemple, ou "***amoindris***", différence entre une dissertation et un cours. On utilise bien les éléments du cours mais il y a prise de position.
 
 On ne conjugue pas non plus, "*Le contrôle permet la démocratie*" devient "*Un contrôle* ***qui*** *permet la démocratie*", ou encore "*Un contrôle* ***permettant*** *la démocratie*".
 
