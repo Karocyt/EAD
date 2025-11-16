@@ -1,7 +1,7 @@
 # EAD
 Mes notes en EAD
 
-### Message 1
+# Message 1
 
 ## Droit Constit :
 
@@ -35,7 +35,7 @@ II Un président en position de force, tant institutionnelle que symbolique
 Pareil mais avec le texte intégral et une éventuelle conclusion, sur plus ou moins 4/5 pages
 
 
-### Message 2
+# Message 2
 
 ## Droit Civil (personnes au S1, famille au S2)
 ### Exam et TD/DM (plus ou moins pareil)
@@ -55,7 +55,7 @@ Conclusion : l'application de la règle aux faits concernés, même si t'as l'im
 Dans les deux cas, si Code Civil autorisé, il est attendu de nous de citer les articles précis, et si pas de Code Civil, il est attendu que l'on connaisse les principes, mais pas forcément qu'on cite les numéros d'articles et/ou leur texte exact.
 Donc oui, en DM, on cite les articles.
 
-### Message 3
+# Message 3
 
 ## Bonifications
 
@@ -82,7 +82,7 @@ Les points sont moins faciles à aller chercher, mais ça fait toujours un stres
 
 Comme dit plus haut, pour les DM il note un plan, donc il ne veut qu'une intro et un plan, pas les paragraphes de développements eux-mêmes. Donc une page de texte puis 6 lignes de plan, en gros
 
-### Message 3 
+# Message 4
 
 À la fin tout le monde aura lu le cours et plus ou moins assimilé les concepts.
 
@@ -96,7 +96,7 @@ En vrai, si tu mange bien ton cours sans trop abuser, que tu mises tout sur les 
 Pour valider le semestre il faut la moyenne mathématique (sans prendre en compte le fait que c'est deux coefs différents) au "bloc" des majeures, ET la moyenne générale (en appliquant les coefs).
 Donc le Droit Civil peut sauver le Droit Constit, mais surtout des mauvaises notes aux mineures peuvent se récupérer avec les majeures avec le jeu des DM et des coefs, justement, le 28/09 il disait que a peut être une stratégie de délibérément "choisir" ses matières, lire tous les cours mais ne bosser que certaines.
 
-### Message 4 
+# Message 5
 
 Comme l'a dit Chan-Tung (prof de Relations Internationales ce semestre, mais qui nous faisait aussi le Constit au S2 l'an dernier, donc prof de majeure ET de mineure), sur un exam de 3h on vous demande une réflexion structurée, et sur un exam d'une heure on vérifie juste que vous connaissez le cours au programme, point, donc recracher le cours, et c'est pas grave si c'est pas super rédigé/structuré.
 
