@@ -62,7 +62,7 @@ Normalement y'a plus ou moins un barême'par DM, de mémoire :
 - 0.75 pts pour 14 et au delà
 (C'était le double l'an dernier, mais chatGPT est passé par là)
 
-Mais en pratique, pour en avoir parlé avec Grandemande après un exam c'est pas un calcul automatique, c'est lui qui met bien ce qu'il veut, sur 3 points, à la fin du semestre. Donc si les copies sont corrigées anonymement, pour la bonification non, il a nos noms et notes sous les yeux.
+Mais en pratique, pour en avoir parlé avec Grandemande après un exam c'est pas un calcul automatique, c'est lui qui met bien ce qu'il veut, sur 1.5 points, à la fin du semestre. Donc si les copies sont corrigées anonymement, pour la bonification non, il a nos noms et notes sous les yeux.
 
 Du coup Grandemange a tendance à valoriser l'effort. J'ai quand même eu 0.25/3 de bonification pour un `6/20` et un `8/20` en DM.
 
@@ -88,7 +88,7 @@ Donc en sus d'avoir "juste" lu attentivement, ce qui va beaucoup compter,
 En vrai, si tu mange bien ton cours sans trop abuser, que tu mises tout sur les DM, et que tu passe une demi-journée par TD en amont de la visio, les majeures passent tranquille (dit le redoublant).
 
 Pour valider le semestre il faut la moyenne mathématique (sans prendre en compte le fait que c'est deux coefs différents) au "bloc" des majeures, ET la moyenne générale (en appliquant les coefs).
-Donc le Droit Civil peut sauver le Droit Constit, mais surtout des mauvaises notes aux mineures peuvent se récupérer avec les majeures avec le jeu des DM et des coefs, justement, le 28/09 il disait que a peut être une stratégie de délibérément "choisir" ses matières, lire tous les cours mais ne bosser que certaines.
+Donc le Droit Civil peut sauver le Droit Constit, mais surtout des mauvaises notes aux mineures peuvent se récupérer avec les majeures avec le jeu des DM et des coefs, justement, le 28/09 il disait que ça peut être une stratégie de délibérément "choisir" ses matières, lire tous les cours mais ne bosser que certaines.
 
 Comme l'a dit Chan-Tung (prof de Relations Internationales ce semestre, mais qui nous faisait aussi le Constit au S2 l'an dernier, donc prof de majeure ET de mineure), sur un exam de 3h on vous demande une réflexion structurée, et sur un exam d'une heure on vérifie juste que vous connaissez le cours au programme, point, donc recracher le cours, et c'est pas grave si c'est pas super rédigé/structuré.
 
