@@ -13,8 +13,10 @@ Intro d'une bonne page structurée comme telle :
 Puis un plan sans le texte des développements ni les transitions.
 
 Chaque titre sert ouvertement la problématique (Si à la lecture d'un titre on voit pas directement en quoi ça va dans le sens de la problématique, c'est pas top). Et de la même manière, chaque sous-titre sert son titre. Là dessus la structure du cours de Grandemange est pas mal. Ses titres sont du cours, donc souvent non qualifiés, mais l'architecture fait bien ressortir la dépendance entre titres et sous-titres, avec les chapeaux qui introduisent et tout ça.
-Les titres doivent donc être qualifiés. On ne parle pas de `Les pouvoirs du Président` mais de `Des pouvoirs présidentiels **renforcés**`, par exemple, différence entre une dissertation et un cours.
-On ne conjugue pas non plus, `Le contrôle permet la démocratie` devient `Un contrôle **qui** permet la démocratie`.
+
+Les titres doivent donc être qualifiés. On ne parle pas de "*Les pouvoirs du Président*" mais de "*Des pouvoirs présidentiels* ***renforcés***", par exemple, différence entre une dissertation et un cours.
+
+On ne conjugue pas non plus, "*Le contrôle permet la démocratie*" devient "*Un contrôle* ***qui*** *permet la démocratie*".
 
 L'idée c'est que le plus dur c'est d'avoir une bonne problématique et un beau plan. Dans le fond, si le plan est bon il n'est pas compliqué de faire rédiger tout ou partie par ChatGPT, il préfère ne noter qu'un plan. De toutes façons en L1 on doit bouffer de la méthodologie.
 Il y a pas mal de doc de méthodologie en cherchant et ils disent tous plus ou moins la même chose.
