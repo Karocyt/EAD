@@ -74,7 +74,8 @@ Mais globalement, en Droit Civil, indépendamment du prof, vu que c'est très "s
 
 En DC, c'est surtout un bon entrainement au plan : c'est le seul truc vraiment "noté" (et anoté) qu'on aura en amont de l'examen).
 Les points sont moins faciles à aller chercher, mais ça fait toujours un stress en moins, en arrivant en exam, de savoir qu'un 9, soit un truc bien en deça de la moyenne, suffit à valider.
-(Alors que normalement, en deça de la moyenne, c'est que t'as pas assimilé la matière, et sur les majeures ça serait pas choquant que ça soit impardonnable)
+(Alors que normalement, en deça de la moyenne, c'est que t'as pas assimilé la matière, et sur les majeures ça serait pas choquant que ça soit impardonnable).
+
 D'ailleurs Grandemange le dit, il y a un océan entre un 8 (on encourage, les connaissances sont là) et un 10 (ça valide, l'exercice est assimilé même si mal maitrisé)
 
 # Remarques globales
