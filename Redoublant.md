@@ -70,7 +70,7 @@ Normalement y'a plus ou moins un barême'par DM, de mémoire :
 
 (C'était le double l'an dernier, mais chatGPT est passé par là)
 
-Mais en pratique, pour en avoir parlé avec Grandemande après un exam c'est pas un calcul automatique, c'est lui qui met bien ce qu'il veut, sur 1.5 points, à la fin du semestre. Donc si les copies sont corrigées anonymement, pour la bonification non, il a nos noms et notes sous les yeux.
+Mais en pratique, pour en avoir parlé avec Grandemange après un exam c'est pas un calcul automatique, c'est lui qui met bien ce qu'il veut, sur 1.5 points, à la fin du semestre. Donc si les copies sont corrigées anonymement, pour la bonification non, il a nos noms et notes sous les yeux.
 
 Du coup Grandemange a tendance à valoriser l'effort. J'ai quand même eu 0.25/3 de bonification pour un `6/20` et un `8/20` en DM.
 
