@@ -60,6 +60,7 @@ Normalement y'a plus ou moins un barême'par DM, de mémoire :
 - 0.25 pts de 10 à 12
 - 0.5 pts de 12 à 14
 - 0.75 pts pour 14 et au delà
+
 (C'était le double l'an dernier, mais chatGPT est passé par là)
 
 Mais en pratique, pour en avoir parlé avec Grandemande après un exam c'est pas un calcul automatique, c'est lui qui met bien ce qu'il veut, sur 1.5 points, à la fin du semestre. Donc si les copies sont corrigées anonymement, pour la bonification non, il a nos noms et notes sous les yeux.
