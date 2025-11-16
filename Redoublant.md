@@ -16,7 +16,7 @@ Chaque titre sert ouvertement la problématique (Si à la lecture d'un titre on 
 
 Les titres doivent donc être qualifiés. On ne parle pas de "*Les pouvoirs du Président*" mais de "*Des pouvoirs présidentiels* ***renforcés***", par exemple, différence entre une dissertation et un cours.
 
-On ne conjugue pas non plus, "*Le contrôle permet la démocratie*" devient "*Un contrôle* ***qui*** *permet la démocratie*".
+On ne conjugue pas non plus, "*Le contrôle permet la démocratie*" devient "*Un contrôle* ***qui*** *permet la démocratie*", ou encore "*Un contrôle* ***permettant*** *la démocratie*".
 
 L'idée c'est que le plus dur c'est d'avoir une bonne problématique et un beau plan. Dans le fond, si le plan est bon il n'est pas compliqué de faire rédiger tout ou partie par ChatGPT, il préfère ne noter qu'un plan. De toutes façons en L1 on doit bouffer de la méthodologie.
 Il y a pas mal de doc de méthodologie en cherchant et ils disent tous plus ou moins la même chose.
