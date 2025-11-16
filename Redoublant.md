@@ -22,23 +22,29 @@ L'idée c'est que le plus dur c'est d'avoir une bonne problématique et un beau 
 Il y a pas mal de doc de méthodologie en cherchant et ils disent tous plus ou moins la même chose.
 Y'a des classiques causes/conséquences, théorie/pratique...
 ```
-I Un pouvoir balancé entre x et y
-  A Un système institutionnel bardé de gardes fous
-    a) idée titrée du paragraphe 1
-    b) idée titrée du paragraphe 2
-  B Des limites inéfficaces dans la pratique
-    a) idée titrée du paragraphe 1
-    b) idée titrée du paragraphe 2
+Sujet : Le chat et son propriétaire.
+Deux éléments, donc il est question de leurs rapports entre eux.
 
-II Un président en position de force, tant institutionnelle que symbolique
-  A Une répartition des pouvoirs inégale
-    a) idée titrée du paragraphe 1
-    b) idée titrée du paragraphe 2
-  B Un mode de scrutin plesbiscitaire
-    a) idée titrée du paragraphe 1
-    b) idée titrée du paragraphe 2
+Problématique : Si l'Homme revendique en droit la propriété de l'animal, le chat n'a-t-il pas, en fait, renversé le rapport de domination pour s'établir comme le véritable maître du foyer ?
+Prise de position dès la problématique. Thèse : Le chat a renversé la rapport entre les deux.
 
+I. L'illusion d'une domination humaine consacrée en droit
+  A) L'affirmation d'un statut juridique de propriétaire
+    a) La maîtrise matérielle de l'Homme sur l'animal (achat, identification)
+    b) L'animal, un "bien" juridiquement approprié par l'Homme
+  B) Un rapport de dépendance économique en apparence unilatéral
+    a) Le propriétaire pourvoyant aux besoins vitaux
+    b) La prise en charge exclusive des soins et de l'habitat
+II. La réalité d'un pouvoir de fait exercé par le chat
+  A) La domestication inversée du propriétaire
+    a) L'imposition unilatérale des rythmes de vie (réveils nocturnes, heures des repas)
+    b) L'obtention de services par une contrainte psychologique (ronronnements, miaulement)
+  B) Une souveraineté territoriale incontestée au sein du foyer
+    a) L'appropriation stratégique des espaces de vie (canapé, lit, ordinateur)
+    b) Le contrôle des "frontières" et des membres du foyer (droit de passage, accueil des invités)
 ```
+Les deux titres I/II reflètent clairement le point de vue choisi dans la problématique par leurs qualificatifs (Illusion vs Réalité), et les sous-titres argumentent bien leurs titres, là aussi avec leurs qualificatifs.
+
 
 Pareil en exam mais avec le texte intégral et une éventuelle conclusion, sur 4 à 6 pages
 
