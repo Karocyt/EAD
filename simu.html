@@ -262,6 +262,7 @@
             SUBJECTS.forEach(sub => {
                 const div = document.createElement('div');
                 div.className = 'resit-item';
+                div.id = `resit_item_${sub.id}`; // CHANGEMENT: ID pour cibler l'élément
                 div.innerHTML = `
                     <input type="checkbox" id="resit_check_${sub.id}">
                     <div class="resit-info"><strong>${sub.name}</strong> <span style="color:#777;font-size:0.8rem">(Coef ${sub.coef})</span></div>
@@ -539,4 +540,5 @@
 
 </body>
 </html>
+
 
