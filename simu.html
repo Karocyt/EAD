@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulateur L1 Droit EAD - UGA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" type="image/png" sizes="96x96" href="https://favicon-ksup.univ-grenoble-alpes.fr/SITEUI/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://favicon-ksup.univ-grenoble-alpes.fr/SITEUI/favicon-16x16.png">
+    <style>
+        :root {
+            --primary: #b71a3e;
+            --secondary: #2c3e50;
+            --bg: #f4f6f8;
+            --card-bg: #ffffff;
+            --text: #333;
+            --border: #ddd;
+            --success: #27ae60;
+            --danger: #c0392b;
+            --warning: #f39c12;
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            padding-bottom: 140px; /* Espace augmenté pour le footer + reset */
+        }
+        header {
+            background-color: white;
+            padding: 1rem;
+            text-align: center;
+            border-bottom: 4px solid var(--primary);
+        }
+        .logo-img { max-height: 80px; margin-bottom: 10px; }
+        h1 { margin: 0; font-size: 1.4rem; color: var(--secondary); }
+        .subtitle { font-size: 0.9rem; color: #666; margin-top: 5px; }
+        .container { max-width: 1100px; margin: 20px auto; padding: 0 15px; }
+        .grid-semesters { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        @media (max-width: 900px) { .grid-semesters { grid-template-columns: 1fr; } }
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        h2 { 
+            font-size: 1.2rem; color: var(--primary); 
+            border-bottom: 2px solid #eee; padding-bottom: 0.5rem; margin-top: 0; 
+        }
+        .subject { padding: 12px 0; border-bottom: 1px dashed #eee; }
+        .subject:last-child { border-bottom: none; }
+        .sub-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: 600; font-size: 0.95rem; }
+        .badge { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; color: white; font-weight: normal; margin-left: 5px; }
+        .badge-coef { background-color: #7f8c8d; }
+        .badge-major { background-color: var(--primary); }
+        .inputs-row { display: flex; gap: 10px; align-items: center; }
+        .input-wrapper { display: flex; flex-direction: column; flex: 1; }
+        .input-wrapper label { font-size: 0.7rem; color: #888; margin-bottom: 2px; }
+        input[type="number"] {
+            padding: 6px; border: 1px solid var(--border); border-radius: 4px; width: 100%; font-size: 0.95rem; box-sizing: border-box;
+        }
+        input[type="number"]:focus { border-color: var(--primary); outline: none; }
+        .final-note { font-weight: bold; font-size: 1.1rem; min-width: 55px; text-align: right; }
+        .status-box {
+            background: #f8f9fa; border-radius: 6px; padding: 10px; margin-top: 15px; border-left: 4px solid #ccc;
+        }
+        .status-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.9rem; }
+        .status-row.total { font-weight: bold; font-size: 1rem; margin-top: 8px; padding-top: 8px; border-top: 1px solid #ddd; }
+        .valid { border-left-color: var(--success); background-color: #eafaf1; }
+        .invalid { border-left-color: var(--danger); background-color: #fdedec; }
+        .rattrapage-section { border: 2px solid var(--warning); display: none; }
+        .rattrapage-header {
+            background: #fff3cd; margin: -20px -20px 20px -20px; padding: 15px 20px; border-radius: 6px 6px 0 0; color: #856404; display: flex; align-items: center; gap: 10px;
+        }
+        .rattrapage-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .resit-item {
+            display: flex; align-items: center; gap: 10px; background: #fff; padding: 8px; border: 1px solid #eee; border-radius: 4px;
+        }
+        .resit-info { flex: 1; font-size: 0.9rem; }
+        .prediction-box { background: var(--secondary); color: white; padding: 15px; border-radius: 6px; margin-top: 20px; text-align: center; }
+        .btn-toggle {
+            display: block; margin: 20px auto; padding: 10px 20px; background: var(--secondary); color: white; border: none; border-radius: 20px; cursor: pointer; font-size: 1rem;
+        }
+        .btn-toggle:hover { background: #34495e; }
+        .text-success { color: var(--success); }
+        .text-danger { color: var(--danger); }
+        .annual-footer {
+            position: fixed; bottom: 0; left: 0; right: 0; background: white; box-shadow: 0 -4px 15px rgba(0,0,0,0.1); padding: 15px; z-index: 100; display: flex; justify-content: center; gap: 20px; align-items: center; flex-wrap: wrap;
+        }
+        .annual-stat { text-align: center; }
+        .annual-stat .label { font-size: 0.75rem; color: #666; display: block;}
+        .annual-stat .value { font-size: 1.3rem; font-weight: bold; }
+        .annual-badge { padding: 5px 15px; border-radius: 20px; font-weight: bold; color: white; background: #95a5a6; font-size: 0.9rem; }
+        .bg-success { background: var(--success); }
+        .bg-danger { background: var(--danger); }
+        
+        .reset-btn {
+            background: none; border: none; color: #999; cursor: pointer; font-size: 0.8rem; margin-top: 5px; text-decoration: underline;
+        }
+        .reset-btn:hover { color: var(--danger); }
+        
+        #loading-msg { text-align: center; padding: 50px; font-size: 1.2rem; color: #666; }
+    </style>
+</head>
+<body>
+
+<header>
+    <img src="https://www.univ-grenoble-alpes.fr/uas/SITEUI/UGA_LOGO_ACCUEIL/logo+bleu.svg" alt="Logo UGA" class="logo-img">
+    <h1>Simulateur de Notes - L1 Droit EAD</h1>
+    <div class="subtitle">Calculs prévisionnels & Rattrapages</div>
+</header>
+
+<div id="loading-msg">Chargement du simulateur...</div>
+
+<div class="container" id="main-app" style="display:none;">
+
+    <div class="grid-semesters">
+        <div class="card">
+            <h2>Semestre 1</h2>
+            <div id="container-s1"></div>
+            <div class="status-box" id="status-s1">
+                <div class="status-row"><span>Moyenne Majeures</span><span id="avg-maj-s1">-</span></div>
+                <div class="status-row total"><span>Moyenne Générale S1</span><span id="avg-gen-s1">-</span></div>
+                <div style="text-align:center; margin-top:5px; font-weight:bold; font-size:0.9rem;" id="valid-s1"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Semestre 2</h2>
+            <div id="container-s2"></div>
+            <div class="status-box" id="status-s2">
+                <div class="status-row"><span>Moyenne Majeures</span><span id="avg-maj-s2">-</span></div>
+                <div class="status-row total"><span>Moyenne Générale S2</span><span id="avg-gen-s2">-</span></div>
+                <div style="text-align:center; margin-top:5px; font-weight:bold; font-size:0.9rem;" id="valid-s2"></div>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn-toggle" onclick="toggleRattrapages()">
+        <i class="fas fa-calculator"></i> Simuler les Rattrapages
+    </button>
+
+    <div class="card rattrapage-section" id="rattrapage-box">
+        <div class="rattrapage-header">
+            <i class="fas fa-life-ring fa-lg"></i>
+            <div><strong>Module de Secours</strong><br><small>Cochez les matières à repasser.</small></div>
+        </div>
+        <div class="rattrapage-grid" id="resit-list"></div>
+        <div class="prediction-box">
+            <div style="margin-bottom: 10px; font-size:1.1rem;">Objectif : Validation Annuelle</div>
+            <div id="resit-target-maj" style="margin-bottom:5px;"></div>
+            <div id="resit-target-gen"></div>
+        </div>
+    </div>
+    
+    <div style="text-align:center; margin-top:30px; margin-bottom: 20px;">
+        <button class="reset-btn" onclick="resetData()"><i class="fas fa-trash"></i> Effacer toutes les données et recommencer</button>
+    </div>
+</div>
+
+<div class="annual-footer" id="footer-app" style="display:none;">
+    <div class="annual-stat"><span class="label">Moyenne Majeures An</span><span class="value" id="year-maj">-</span></div>
+    <div class="annual-stat"><span class="label">Moyenne Générale An</span><span class="value" id="year-gen">-</span></div>
+    <div class="annual-badge" id="year-status">En attente</div>
+</div>
+
+<script>
+    // Configuration stricte des matières
+    const SUBJECTS = [
+        { id: 's1_p1', sem: 1, name: "Droit des Personnes", coef: 7, isMajor: true, bonusMax: 1.5 },
+        { id: 's1_p2', sem: 1, name: "Droit Constitutionnel", coef: 7, isMajor: true, bonusMax: 1.5 },
+        { id: 's1_p3', sem: 1, name: "Relations Internationales", coef: 4, isMajor: false },
+        { id: 's1_p4', sem: 1, name: "Introduction Droit", coef: 5, isMajor: false },
+        { id: 's1_p5', sem: 1, name: "Hist. des Instit. après 1789", coef: 5, isMajor: false },
+        
+        { id: 's2_p1', sem: 2, name: "Droit de la famille", coef: 7, isMajor: true, bonusMax: 1.5 },
+        { id: 's2_p2', sem: 2, name: "Droit Constitutionnel S2", coef: 7, isMajor: true, bonusMax: 1.5 },
+        { id: 's2_p3', sem: 2, name: "Intro Gds Syst. Jur.", coef: 4, isMajor: false },
+        { id: 's2_p4', sem: 2, name: "Hist. des Instit. avant 1789", coef: 4, isMajor: false }
+    ];
+
+    const STORAGE_KEY = "simu_droit_l1_v1";
+    let currentGrades = {};
+
+    window.addEventListener('DOMContentLoaded', () => {
+        init();
+        loadData(); // Charger les données sauvegardées
+        
+        document.getElementById('loading-msg').style.display = 'none';
+        document.getElementById('main-app').style.display = 'block';
+        document.getElementById('footer-app').style.display = 'flex';
+        
+        calculate(); // Calculer avec les données chargées
+    });
+
+    function init() {
+        // Génération S1 et S2
+        SUBJECTS.forEach(sub => {
+            const container = document.getElementById('container-s' + sub.sem);
+            if(!container) return; 
+
+            const div = document.createElement('div');
+            div.className = 'subject';
+            
+            let badges = `<span class="badge badge-coef">Coef ${sub.coef}</span>`;
+            if(sub.isMajor) badges += ` <span class="badge badge-major">Majeure</span>`;
+
+            let inputsHtml = '';
+            if (sub.bonusMax) {
+                inputsHtml = `
+                    <div class="input-wrapper" style="flex:2">
+                        <label>Examen (/20)</label>
+                        <input type="number" id="grade_${sub.id}" min="0" max="20" step="0.25" placeholder="Note">
+                    </div>
+                    <div class="input-wrapper" style="flex:1">
+                        <label>DM (/${sub.bonusMax})</label>
+                        <input type="number" id="bonus_${sub.id}" min="0" max="${sub.bonusMax}" step="0.25" placeholder="Bonus">
+                    </div>
+                `;
+            } else {
+                inputsHtml = `
+                    <div class="input-wrapper">
+                        <label>Note (/20)</label>
+                        <input type="number" id="grade_${sub.id}" min="0" max="20" step="0.25" placeholder="Note">
+                    </div>
+                `;
+            }
+
+            div.innerHTML = `
+                <div class="sub-header">
+                    <span>${sub.name}</span>
+                    <div class="badges">${badges}</div>
+                </div>
+                <div class="inputs-row">
+                    ${inputsHtml}
+                    <div class="final-note" id="total_${sub.id}">-</div>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+
+        // Génération Rattrapages
+        const resitContainer = document.getElementById('resit-list');
+        if(resitContainer) {
+            SUBJECTS.forEach(sub => {
+                const div = document.createElement('div');
+                div.className = 'resit-item';
+                div.innerHTML = `
+                    <input type="checkbox" id="resit_check_${sub.id}">
+                    <div class="resit-info"><strong>${sub.name}</strong> <span style="color:#777;font-size:0.8rem">(Coef ${sub.coef})</span></div>
+                    <input type="number" class="resit-input" id="resit_grade_${sub.id}" placeholder="?" min="0" max="20" disabled style="width:60px; padding:5px;">
+                `;
+                resitContainer.appendChild(div);
+            });
+        }
+
+        // Écouteurs globaux
+        document.body.addEventListener('input', (e) => {
+            if(e.target.tagName === 'INPUT') {
+                saveData(); // Sauvegarder à chaque frappe
+                if(e.target.id.includes('resit')) calculateRattrapage();
+                else calculate();
+            }
+        });
+        
+        document.body.addEventListener('change', (e) => {
+            if(e.target.type === 'checkbox' && e.target.id.includes('resit_check')) {
+                const id = e.target.id.replace('resit_check_', '');
+                const input = document.getElementById('resit_grade_' + id);
+                if(input) {
+                    input.disabled = !e.target.checked;
+                    if(!e.target.checked) input.value = '';
+                }
+                saveData(); // Sauvegarder l'état de la case
+                calculateRattrapage();
+            }
+        });
+    }
+
+    // --- LOGIQUE DE SAUVEGARDE ---
+    function saveData() {
+        const state = {};
+        document.querySelectorAll('input').forEach(el => {
+            if(el.type === 'checkbox') state[el.id] = el.checked;
+            else state[el.id] = el.value;
+        });
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function loadData() {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if(!saved) return;
+        
+        try {
+            const state = JSON.parse(saved);
+            Object.keys(state).forEach(key => {
+                const el = document.getElementById(key);
+                if(el) {
+                    if(el.type === 'checkbox') {
+                        el.checked = state[key];
+                        // Déclencher logic UI pour les checkboxes (activer l'input associé)
+                        if(key.includes('resit_check_')) {
+                            const subId = key.replace('resit_check_', '');
+                            const inp = document.getElementById('resit_grade_' + subId);
+                            if(inp) inp.disabled = !state[key];
+                        }
+                    }
+                    else {
+                        el.value = state[key];
+                    }
+                }
+            });
+            
+            // Si des rattrapages étaient activés, on ouvre la box
+            const hasResit = Object.keys(state).some(k => k.includes('resit_check') && state[k] === true);
+            if(hasResit) {
+                document.getElementById('rattrapage-box').style.display = 'block';
+            }
+
+        } catch(e) {
+            console.error("Erreur chargement", e);
+        }
+    }
+
+    function resetData() {
+        if(confirm("Voulez-vous vraiment effacer toutes les notes enregistrées ?")) {
+            localStorage.removeItem(STORAGE_KEY);
+            location.reload();
+        }
+    }
+    // -----------------------------
+
+    function calculate() {
+        currentGrades = {};
+        SUBJECTS.forEach(sub => {
+            const gEl = document.getElementById('grade_' + sub.id);
+            const bEl = document.getElementById('bonus_' + sub.id);
+            
+            let val = 0;
+            let hasInput = false;
+
+            if (gEl && gEl.value !== '') {
+                val += parseFloat(gEl.value);
+                hasInput = true;
+            }
+            if (bEl && bEl.value !== '') {
+                val += parseFloat(bEl.value);
+            }
+
+            if(val > 20) val = 20; 
+
+            if(hasInput) currentGrades[sub.id] = val;
+
+            const disp = document.getElementById('total_' + sub.id);
+            if(disp) {
+                if(hasInput) {
+                    disp.textContent = val.toLocaleString('fr-FR', {maximumFractionDigits:2});
+                    disp.className = 'final-note ' + (val >= 10 ? 'text-success' : 'text-danger');
+                } else {
+                    disp.textContent = '-';
+                    disp.className = 'final-note';
+                }
+            }
+        });
+
+        const s1 = getSemStats(1);
+        const s2 = getSemStats(2);
+        const year = getGlobalStats();
+
+        updateSemDisplay(1, s1);
+        updateSemDisplay(2, s2);
+
+        document.getElementById('year-maj').textContent = year.majAvg.toLocaleString('fr-FR', {minimumFractionDigits:3, maximumFractionDigits:3});
+        document.getElementById('year-gen').textContent = year.genAvg.toLocaleString('fr-FR', {minimumFractionDigits:3, maximumFractionDigits:3});
+
+        const yearValid = (year.majAvg >= 10 && year.genAvg >= 10);
+        const yStat = document.getElementById('year-status');
+        if(yearValid) {
+            yStat.textContent = "VALIDÉ";
+            yStat.className = "annual-badge bg-success";
+        } else {
+            yStat.textContent = "NON VALIDÉ";
+            yStat.className = "annual-badge bg-danger";
+        }
+        
+        if(document.getElementById('rattrapage-box').style.display === 'block') {
+            calculateRattrapage();
+        }
+    }
+
+    function getSemStats(sem) {
+        let tPts = 0, tCoef = 0, mPts = 0, mCoef = 0;
+        SUBJECTS.filter(s => s.sem === sem).forEach(s => {
+            const note = currentGrades[s.id] || 0;
+            tPts += note * s.coef;
+            tCoef += s.coef;
+            if(s.isMajor) {
+                mPts += note * s.coef;
+                mCoef += s.coef;
+            }
+        });
+        return {
+            gen: tCoef ? tPts/tCoef : 0,
+            maj: mCoef ? mPts/mCoef : 0,
+            isValid: (tCoef ? tPts/tCoef : 0) >= 10 && (mCoef ? mPts/mCoef : 0) >= 10
+        };
+    }
+
+    function getGlobalStats() {
+        let tPts = 0, tCoef = 0, mPts = 0, mCoef = 0;
+        SUBJECTS.forEach(s => {
+            const note = currentGrades[s.id] || 0;
+            tPts += note * s.coef;
+            tCoef += s.coef;
+            if(s.isMajor) {
+                mPts += note * s.coef;
+                mCoef += s.coef;
+            }
+        });
+        return {
+            genAvg: tCoef ? tPts/tCoef : 0,
+            majAvg: mCoef ? mPts/mCoef : 0,
+            totalCoef: tCoef,
+            majCoef: mCoef
+        };
+    }
+
+    function updateSemDisplay(sem, stats) {
+        document.getElementById('avg-maj-s'+sem).textContent = stats.maj.toLocaleString('fr-FR', {maximumFractionDigits:3}) + "/20";
+        document.getElementById('avg-gen-s'+sem).textContent = stats.gen.toLocaleString('fr-FR', {maximumFractionDigits:3}) + "/20";
+        const vDiv = document.getElementById('valid-s'+sem);
+        const box = document.getElementById('status-s'+sem);
+        if(stats.isValid) {
+            vDiv.textContent = "SEMESTRE VALIDÉ";
+            vDiv.className = "text-success";
+            box.className = "status-box valid";
+        } else {
+            vDiv.textContent = "Non Validé";
+            vDiv.className = "text-danger";
+            box.className = "status-box invalid";
+        }
+    }
+
+    function toggleRattrapages() {
+        const box = document.getElementById('rattrapage-box');
+        const isHidden = box.style.display === 'none' || box.style.display === '';
+        box.style.display = isHidden ? 'block' : 'none';
+        if(isHidden) calculateRattrapage();
+    }
+
+    function calculateRattrapage() {
+        const globals = getGlobalStats();
+        
+        let acquiredGenPts = 0, acquiredMajPts = 0;
+        let missingCoefGen = 0, missingCoefMaj = 0;
+        let manualResitPts = 0, manualResitMajPts = 0;
+
+        SUBJECTS.forEach(sub => {
+            const isResit = document.getElementById('resit_check_' + sub.id).checked;
+            
+            if(!isResit) {
+                const note = currentGrades[sub.id] || 0;
+                acquiredGenPts += note * sub.coef;
+                if(sub.isMajor) acquiredMajPts += note * sub.coef;
+            } else {
+                const inp = document.getElementById('resit_grade_' + sub.id);
+                if(inp && inp.value !== '') {
+                    const note = parseFloat(inp.value);
+                    manualResitPts += note * sub.coef;
+                    if(sub.isMajor) manualResitMajPts += note * sub.coef;
+                } else {
+                    missingCoefGen += sub.coef;
+                    if(sub.isMajor) missingCoefMaj += sub.coef;
+                }
+            }
+        });
+
+        const targetGen = 10 * globals.totalCoef;
+        const targetMaj = 10 * globals.majCoef;
+
+        const gapGen = targetGen - (acquiredGenPts + manualResitPts);
+        const gapMaj = targetMaj - (acquiredMajPts + manualResitMajPts);
+
+        const render = (gap, coef, name) => {
+            if(gap <= 0.01) return `<div class="text-success"><i class="fas fa-check"></i> ${name} : Validé !</div>`;
+            if(coef === 0) return `<div class="text-danger"><i class="fas fa-times"></i> ${name} : Impossible avec ces notes.</div>`;
+            const req = gap / coef;
+            if(req > 20) return `<div class="text-danger"><i class="fas fa-skull"></i> ${name} : Impossible (>20).</div>`;
+            return `<div>${name} : Viser <strong style="color:var(--primary); font-size:1.2rem">${req.toFixed(2)}</strong> sur les matières restantes</div>`;
+        };
+
+        document.getElementById('resit-target-maj').innerHTML = render(gapMaj, missingCoefMaj, "Bloc Majeures");
+        document.getElementById('resit-target-gen').innerHTML = render(gapGen, missingCoefGen, "Moyenne Générale");
+    }
+</script>
+
+</body>
+</html>
