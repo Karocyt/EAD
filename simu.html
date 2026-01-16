@@ -148,11 +148,28 @@
             <i class="fas fa-life-ring fa-lg"></i>
             <div><strong>Module de Secours</strong><br><small>Cochez les matières à repasser.</small></div>
         </div>
+        
         <div class="rattrapage-grid" id="resit-list"></div>
+        
         <div class="prediction-box">
-            <div style="margin-bottom: 10px; font-size:1.1rem;">Objectif : Validation Annuelle</div>
-            <div id="resit-target-maj" style="margin-bottom:5px;"></div>
-            <div id="resit-target-gen"></div>
+            <div style="margin-bottom: 15px; font-size:1.1rem; text-align:center; font-weight:bold;">Objectifs de Validation</div>
+            <div class="prediction-wrapper">
+                <div class="pred-col" style="border-color: rgba(255,255,255,0.4); background:rgba(255,255,255,0.15)">
+                    <div class="pred-title pred-main-title">🎯 Année Complète</div>
+                    <div id="resit-target-year-maj" class="pred-result"></div>
+                    <div id="resit-target-year-gen" class="pred-result"></div>
+                </div>
+                <div class="pred-col">
+                    <div class="pred-title">Semestre 1</div>
+                    <div id="resit-target-s1-maj" class="pred-result"></div>
+                    <div id="resit-target-s1-gen" class="pred-result"></div>
+                </div>
+                <div class="pred-col">
+                    <div class="pred-title">Semestre 2</div>
+                    <div id="resit-target-s2-maj" class="pred-result"></div>
+                    <div id="resit-target-s2-gen" class="pred-result"></div>
+                </div>
+            </div>
         </div>
     </div>
     
@@ -168,7 +185,6 @@
 </div>
 
 <script>
-    // Configuration stricte des matières
     const SUBJECTS = [
         { id: 's1_p1', sem: 1, name: "Droit des Personnes", coef: 7, isMajor: true, bonusMax: 1.5 },
         { id: 's1_p2', sem: 1, name: "Droit Constitutionnel", coef: 7, isMajor: true, bonusMax: 1.5 },
@@ -182,22 +198,19 @@
         { id: 's2_p4', sem: 2, name: "Hist. des Instit. avant 1789", coef: 4, isMajor: false }
     ];
 
-    const STORAGE_KEY = "simu_droit_l1_v1";
+    const STORAGE_KEY = "simu_droit_l1_v2";
     let currentGrades = {};
 
     window.addEventListener('DOMContentLoaded', () => {
         init();
-        loadData(); // Charger les données sauvegardées
-        
+        loadData();
         document.getElementById('loading-msg').style.display = 'none';
         document.getElementById('main-app').style.display = 'block';
         document.getElementById('footer-app').style.display = 'flex';
-        
-        calculate(); // Calculer avec les données chargées
+        calculate();
     });
 
     function init() {
-        // Génération S1 et S2
         SUBJECTS.forEach(sub => {
             const container = document.getElementById('container-s' + sub.sem);
             if(!container) return; 
@@ -242,7 +255,7 @@
             container.appendChild(div);
         });
 
-        // Génération Rattrapages
+        // Rattrapages
         const resitContainer = document.getElementById('resit-list');
         if(resitContainer) {
             SUBJECTS.forEach(sub => {
@@ -257,10 +270,9 @@
             });
         }
 
-        // Écouteurs globaux
         document.body.addEventListener('input', (e) => {
             if(e.target.tagName === 'INPUT') {
-                saveData(); // Sauvegarder à chaque frappe
+                saveData();
                 if(e.target.id.includes('resit')) calculateRattrapage();
                 else calculate();
             }
@@ -274,13 +286,12 @@
                     input.disabled = !e.target.checked;
                     if(!e.target.checked) input.value = '';
                 }
-                saveData(); // Sauvegarder l'état de la case
+                saveData();
                 calculateRattrapage();
             }
         });
     }
 
-    // --- LOGIQUE DE SAUVEGARDE ---
     function saveData() {
         const state = {};
         document.querySelectorAll('input').forEach(el => {
@@ -293,7 +304,6 @@
     function loadData() {
         const saved = localStorage.getItem(STORAGE_KEY);
         if(!saved) return;
-        
         try {
             const state = JSON.parse(saved);
             Object.keys(state).forEach(key => {
@@ -301,57 +311,39 @@
                 if(el) {
                     if(el.type === 'checkbox') {
                         el.checked = state[key];
-                        // Déclencher logic UI pour les checkboxes (activer l'input associé)
                         if(key.includes('resit_check_')) {
                             const subId = key.replace('resit_check_', '');
                             const inp = document.getElementById('resit_grade_' + subId);
                             if(inp) inp.disabled = !state[key];
                         }
-                    }
-                    else {
+                    } else {
                         el.value = state[key];
                     }
                 }
             });
-            
-            // Si des rattrapages étaient activés, on ouvre la box
             const hasResit = Object.keys(state).some(k => k.includes('resit_check') && state[k] === true);
-            if(hasResit) {
-                document.getElementById('rattrapage-box').style.display = 'block';
-            }
-
-        } catch(e) {
-            console.error("Erreur chargement", e);
-        }
+            if(hasResit) document.getElementById('rattrapage-box').style.display = 'block';
+        } catch(e) {}
     }
 
     function resetData() {
-        if(confirm("Voulez-vous vraiment effacer toutes les notes enregistrées ?")) {
+        if(confirm("Effacer tout ?")) {
             localStorage.removeItem(STORAGE_KEY);
             location.reload();
         }
     }
-    // -----------------------------
 
     function calculate() {
         currentGrades = {};
         SUBJECTS.forEach(sub => {
             const gEl = document.getElementById('grade_' + sub.id);
             const bEl = document.getElementById('bonus_' + sub.id);
-            
             let val = 0;
             let hasInput = false;
 
-            if (gEl && gEl.value !== '') {
-                val += parseFloat(gEl.value);
-                hasInput = true;
-            }
-            if (bEl && bEl.value !== '') {
-                val += parseFloat(bEl.value);
-            }
-
+            if (gEl && gEl.value !== '') { val += parseFloat(gEl.value); hasInput = true; }
+            if (bEl && bEl.value !== '') { val += parseFloat(bEl.value); }
             if(val > 20) val = 20; 
-
             if(hasInput) currentGrades[sub.id] = val;
 
             const disp = document.getElementById('total_' + sub.id);
@@ -386,9 +378,7 @@
             yStat.className = "annual-badge bg-danger";
         }
         
-        if(document.getElementById('rattrapage-box').style.display === 'block') {
-            calculateRattrapage();
-        }
+        if(document.getElementById('rattrapage-box').style.display === 'block') calculateRattrapage();
     }
 
     function getSemStats(sem) {
@@ -397,10 +387,7 @@
             const note = currentGrades[s.id] || 0;
             tPts += note * s.coef;
             tCoef += s.coef;
-            if(s.isMajor) {
-                mPts += note * s.coef;
-                mCoef += s.coef;
-            }
+            if(s.isMajor) { mPts += note * s.coef; mCoef += s.coef; }
         });
         return {
             gen: tCoef ? tPts/tCoef : 0,
@@ -415,10 +402,7 @@
             const note = currentGrades[s.id] || 0;
             tPts += note * s.coef;
             tCoef += s.coef;
-            if(s.isMajor) {
-                mPts += note * s.coef;
-                mCoef += s.coef;
-            }
+            if(s.isMajor) { mPts += note * s.coef; mCoef += s.coef; }
         });
         return {
             genAvg: tCoef ? tPts/tCoef : 0,
@@ -452,48 +436,103 @@
     }
 
     function calculateRattrapage() {
-        const globals = getGlobalStats();
-        
-        let acquiredGenPts = 0, acquiredMajPts = 0;
-        let missingCoefGen = 0, missingCoefMaj = 0;
-        let manualResitPts = 0, manualResitMajPts = 0;
+        // Initialisation des compteurs
+        let stats = {
+            year: { acqGen: 0, acqMaj: 0, missGen: 0, missMaj: 0, manGen: 0, manMaj: 0 },
+            s1: { acqGen: 0, acqMaj: 0, missGen: 0, missMaj: 0, manGen: 0, manMaj: 0, totGen: 0, totMaj: 0 },
+            s2: { acqGen: 0, acqMaj: 0, missGen: 0, missMaj: 0, manGen: 0, manMaj: 0, totGen: 0, totMaj: 0 }
+        };
 
         SUBJECTS.forEach(sub => {
             const isResit = document.getElementById('resit_check_' + sub.id).checked;
+            const scope = sub.sem === 1 ? 's1' : 's2';
             
+            // Compter les Coefs Totaux du semestre (pour cibles)
+            stats[scope].totGen += sub.coef;
+            if(sub.isMajor) stats[scope].totMaj += sub.coef;
+
             if(!isResit) {
+                // Matière acquise (non repassée)
                 const note = currentGrades[sub.id] || 0;
-                acquiredGenPts += note * sub.coef;
-                if(sub.isMajor) acquiredMajPts += note * sub.coef;
+                const pts = note * sub.coef;
+                
+                stats.year.acqGen += pts;
+                stats[scope].acqGen += pts;
+                
+                if(sub.isMajor) {
+                    stats.year.acqMaj += pts;
+                    stats[scope].acqMaj += pts;
+                }
             } else {
+                // Matière repassée
                 const inp = document.getElementById('resit_grade_' + sub.id);
                 if(inp && inp.value !== '') {
+                    // Note saisie manuellement
                     const note = parseFloat(inp.value);
-                    manualResitPts += note * sub.coef;
-                    if(sub.isMajor) manualResitMajPts += note * sub.coef;
+                    const pts = note * sub.coef;
+                    
+                    stats.year.manGen += pts;
+                    stats[scope].manGen += pts;
+                    
+                    if(sub.isMajor) {
+                        stats.year.manMaj += pts;
+                        stats[scope].manMaj += pts;
+                    }
                 } else {
-                    missingCoefGen += sub.coef;
-                    if(sub.isMajor) missingCoefMaj += sub.coef;
+                    // Note inconnue (ce qu'on cherche)
+                    stats.year.missGen += sub.coef;
+                    stats[scope].missGen += sub.coef;
+                    
+                    if(sub.isMajor) {
+                        stats.year.missMaj += sub.coef;
+                        stats[scope].missMaj += sub.coef;
+                    }
                 }
             }
         });
 
-        const targetGen = 10 * globals.totalCoef;
-        const targetMaj = 10 * globals.majCoef;
+        // Calculs des cibles (Globales récupérées via stats.s1/s2 pour cohérence)
+        const globals = getGlobalStats();
+        const targetGenYear = 10 * globals.totalCoef;
+        const targetMajYear = 10 * globals.majCoef;
+        
+        const targetGenS1 = 10 * stats.s1.totGen;
+        const targetMajS1 = 10 * stats.s1.totMaj;
+        
+        const targetGenS2 = 10 * stats.s2.totGen;
+        const targetMajS2 = 10 * stats.s2.totMaj;
 
-        const gapGen = targetGen - (acquiredGenPts + manualResitPts);
-        const gapMaj = targetMaj - (acquiredMajPts + manualResitMajPts);
+        // Fonction d'affichage
+        const renderBlock = (targetGen, acqGen, manGen, missCoefGen, targetMaj, acqMaj, manMaj, missCoefMaj) => {
+            const gapGen = targetGen - (acqGen + manGen);
+            const gapMaj = targetMaj - (acqMaj + manMaj);
 
-        const render = (gap, coef, name) => {
-            if(gap <= 0.01) return `<div class="text-success"><i class="fas fa-check"></i> ${name} : Validé !</div>`;
-            if(coef === 0) return `<div class="text-danger"><i class="fas fa-times"></i> ${name} : Impossible avec ces notes.</div>`;
-            const req = gap / coef;
-            if(req > 20) return `<div class="text-danger"><i class="fas fa-skull"></i> ${name} : Impossible (>20).</div>`;
-            return `<div>${name} : Viser <strong style="color:var(--primary); font-size:1.2rem">${req.toFixed(2)}</strong> sur les matières restantes</div>`;
+            const formatLine = (gap, coef, label) => {
+                if(gap <= 0.01) return `<div class="text-success" style="font-size:0.8rem"><i class="fas fa-check"></i> ${label} : OK</div>`;
+                if(coef === 0) return `<div class="text-danger" style="font-size:0.8rem"><i class="fas fa-times"></i> ${label} : Impossible</div>`;
+                const req = gap / coef;
+                if(req > 20) return `<div class="text-danger" style="font-size:0.8rem"><i class="fas fa-skull"></i> ${label} : >20</div>`;
+                return `<div style="font-size:0.8rem">${label} : <strong>${req.toFixed(2)}</strong></div>`;
+            };
+
+            return formatLine(gapMaj, missCoefMaj, "Majeures") + formatLine(gapGen, missCoefGen, "Générale");
         };
 
-        document.getElementById('resit-target-maj').innerHTML = render(gapMaj, missingCoefMaj, "Bloc Majeures");
-        document.getElementById('resit-target-gen').innerHTML = render(gapGen, missingCoefGen, "Moyenne Générale");
+        // Injection HTML
+        document.getElementById('resit-target-year-maj').innerHTML = renderBlock(
+            targetGenYear, stats.year.acqGen, stats.year.manGen, stats.year.missGen,
+            targetMajYear, stats.year.acqMaj, stats.year.manMaj, stats.year.missMaj
+        );
+        
+        document.getElementById('resit-target-s1-maj').innerHTML = renderBlock(
+            targetGenS1, stats.s1.acqGen, stats.s1.manGen, stats.s1.missGen,
+            targetMajS1, stats.s1.acqMaj, stats.s1.manMaj, stats.s1.missMaj
+        );
+
+        document.getElementById('resit-target-s2-maj').innerHTML = renderBlock(
+            targetGenS2, stats.s2.acqGen, stats.s2.manGen, stats.s2.missGen,
+            targetMajS2, stats.s2.acqMaj, stats.s2.manMaj, stats.s2.missMaj
+        );
     }
 </script>
 
