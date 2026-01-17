@@ -111,7 +111,7 @@
 <header>
     <img src="https://www.univ-grenoble-alpes.fr/uas/SITEUI/UGA_LOGO_ACCUEIL/logo+bleu.svg" alt="Logo UGA" class="logo-img">
     <h1>Simulateur de Notes - L1 Droit EAD</h1>
-    <div class="subtitle">Calculs prévisionnels & Rattrapages</div>
+    <div class="subtitle">Calculateur non officiel</div>
 </header>
 
 <div id="loading-msg">Chargement du simulateur...</div>
@@ -177,11 +177,15 @@
     <div style="text-align:center; margin-top:30px; margin-bottom: 20px;">
         <button class="reset-btn" onclick="resetData()"><i class="fas fa-trash"></i> Effacer toutes les données et recommencer</button>
     </div>
+    
+    <div style="font-size: 0.75rem; color: #999; text-align: center; margin-top: 30px; line-height: 1.4;">
+        <p><strong>Avertissement :</strong> Ce simulateur a été réalisé par un étudiant. Il n'est ni édité, ni validé par l'Université Grenoble Alpes.</p>
+    </div>
 </div>
 
 <div class="annual-footer" id="footer-app" style="display:none;">
-    <div class="annual-stat"><span class="label">Moyenne Majeures An</span><span class="value" id="year-maj">-</span></div>
-    <div class="annual-stat"><span class="label">Moyenne Générale An</span><span class="value" id="year-gen">-</span></div>
+    <div class="annual-stat"><span class="label">Moyenne Majeures Année</span><span class="value" id="year-maj">-</span></div>
+    <div class="annual-stat"><span class="label">Moyenne Générale Année</span><span class="value" id="year-gen">-</span></div>
     <div class="annual-badge" id="year-status">En attente</div>
 </div>
 
@@ -540,5 +544,6 @@
 
 </body>
 </html>
+
 
 
