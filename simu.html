@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulateur Notes</title>
+    <title>Simulateur Notes Droit EAD</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="icon" type="image/png" sizes="96x96" href="https://favicon-ksup.univ-grenoble-alpes.fr/SITEUI/favicon-96x96.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="https://favicon-ksup.univ-grenoble-alpes.fr/SITEUI/favicon-16x16.png">
     <style>
         :root {
             --primary: #b71a3e;
@@ -18,6 +17,7 @@
             --success: #27ae60;
             --danger: #c0392b;
             --warning: #f39c12;
+            --gray: #95a5a6;
         }
         body {
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -25,7 +25,7 @@
             color: var(--text);
             margin: 0;
             padding: 0;
-            padding-bottom: 140px; /* Espace augmenté pour le footer + reset */
+            padding-bottom: 140px;
         }
         header {
             background-color: white;
@@ -35,10 +35,24 @@
         }
         .logo-img { max-height: 80px; margin-bottom: 10px; }
         h1 { margin: 0; font-size: 1.4rem; color: var(--secondary); }
-        .subtitle { font-size: 0.9rem; color: #666; margin-top: 5px; }
+        
+        /* Sélecteur de cursus */
+        .curriculum-selector { margin-top: 15px; }
+        select {
+            padding: 8px 12px;
+            font-size: 1rem;
+            border: 2px solid var(--primary);
+            border-radius: 4px;
+            background: white;
+            color: var(--secondary);
+            font-weight: bold;
+            cursor: pointer;
+        }
+
         .container { max-width: 1100px; margin: 20px auto; padding: 0 15px; }
         .grid-semesters { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
         @media (max-width: 900px) { .grid-semesters { grid-template-columns: 1fr; } }
+        
         .card {
             background: var(--card-bg);
             padding: 20px;
@@ -50,28 +64,39 @@
             font-size: 1.2rem; color: var(--primary); 
             border-bottom: 2px solid #eee; padding-bottom: 0.5rem; margin-top: 0; 
         }
+        
         .subject { padding: 12px 0; border-bottom: 1px dashed #eee; }
         .subject:last-child { border-bottom: none; }
         .sub-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: 600; font-size: 0.95rem; }
+        
         .badge { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; color: white; font-weight: normal; margin-left: 5px; }
         .badge-coef { background-color: #7f8c8d; }
         .badge-major { background-color: var(--primary); }
+        
         .hidden { display: none !important; }
+        
         .inputs-row { display: flex; gap: 10px; align-items: center; }
         .input-wrapper { display: flex; flex-direction: column; flex: 1; }
         .input-wrapper label { font-size: 0.7rem; color: #888; margin-bottom: 2px; }
+        
         input[type="number"] {
             padding: 6px; border: 1px solid var(--border); border-radius: 4px; width: 100%; font-size: 0.95rem; box-sizing: border-box;
         }
         input[type="number"]:focus { border-color: var(--primary); outline: none; }
+        
         .final-note { font-weight: bold; font-size: 1.1rem; min-width: 55px; text-align: right; }
+        
+        /* Status boxes */
         .status-box {
             background: #f8f9fa; border-radius: 6px; padding: 10px; margin-top: 15px; border-left: 4px solid #ccc;
         }
         .status-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.9rem; }
         .status-row.total { font-weight: bold; font-size: 1rem; margin-top: 8px; padding-top: 8px; border-top: 1px solid #ddd; }
+        
         .valid { border-left-color: var(--success); background-color: #eafaf1; }
         .invalid { border-left-color: var(--danger); background-color: #fdedec; }
+        
+        /* Rattrapages */
         .rattrapage-section { border: 2px solid var(--warning); display: none; }
         .rattrapage-header {
             background: #fff3cd; margin: -20px -20px 20px -20px; padding: 15px 20px; border-radius: 6px 6px 0 0; color: #856404; display: flex; align-items: center; gap: 10px;
@@ -79,22 +104,41 @@
         .rattrapage-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .resit-item {
             display: flex; align-items: center; gap: 10px; background: #fff; padding: 8px; border: 1px solid #eee; border-radius: 4px;
+            transition: all 0.3s ease;
         }
         .resit-info { flex: 1; font-size: 0.9rem; }
+        .resit-bonus-display { font-size: 0.75rem; color: var(--success); font-weight: bold; white-space: nowrap; margin-left: 5px; }
+        
+        /* Predictions */
         .prediction-box { background: var(--secondary); color: white; padding: 15px; border-radius: 6px; margin-top: 20px; text-align: center; }
+        .prediction-wrapper { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        @media (max-width: 768px) { .prediction-wrapper { grid-template-columns: 1fr; } }
+        
+        .pred-col {
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 4px; padding: 10px; font-size: 0.9rem;
+        }
+        .pred-title {
+            font-weight: bold; text-transform: uppercase; font-size: 0.8rem; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 4px; color: #ccc;
+        }
+        .pred-main-title { color: #fff; text-align:center; font-weight:bold; }
+        
+        /* Utils */
         .btn-toggle {
             display: block; margin: 20px auto; padding: 10px 20px; background: var(--secondary); color: white; border: none; border-radius: 20px; cursor: pointer; font-size: 1rem;
         }
         .btn-toggle:hover { background: #34495e; }
         .text-success { color: var(--success); }
         .text-danger { color: var(--danger); }
+        
+        /* Footer */
         .annual-footer {
             position: fixed; bottom: 0; left: 0; right: 0; background: white; box-shadow: 0 -4px 15px rgba(0,0,0,0.1); padding: 15px; z-index: 100; display: flex; justify-content: center; gap: 20px; align-items: center; flex-wrap: wrap;
         }
         .annual-stat { text-align: center; }
         .annual-stat .label { font-size: 0.75rem; color: #666; display: block;}
         .annual-stat .value { font-size: 1.3rem; font-weight: bold; }
-        .annual-badge { padding: 5px 15px; border-radius: 20px; font-weight: bold; color: white; background: #95a5a6; font-size: 0.9rem; }
+        .annual-badge { padding: 5px 15px; border-radius: 20px; font-weight: bold; color: white; background: var(--gray); font-size: 0.9rem; }
         .bg-success { background: var(--success); }
         .bg-danger { background: var(--danger); }
         
@@ -110,8 +154,12 @@
 
 <header>
     <img src="https://www.univ-grenoble-alpes.fr/uas/SITEUI/UGA_LOGO_ACCUEIL/logo+bleu.svg" alt="Logo UGA" class="logo-img">
-    <h1>Simulateur de Notes - L1 Droit EAD</h1>
-    <div class="subtitle">Calculs prévisionnels & Rattrapages</div>
+    <h1>Simulateur de Notes - Droit EAD</h1>
+    
+    <div class="curriculum-selector">
+        <select id="curriculum-select" onchange="changeCurriculum()">
+            </select>
+    </div>
 </header>
 
 <div id="loading-msg">Chargement du simulateur...</div>
@@ -147,13 +195,16 @@
     <div class="card rattrapage-section" id="rattrapage-box">
         <div class="rattrapage-header">
             <i class="fas fa-life-ring fa-lg"></i>
-            <div><strong>Module de Secours</strong><br><small>Cochez les matières à repasser.</small></div>
+            <div>
+                <strong>Module de Secours</strong><br>
+                <small>Seules les matières non validées (<10) apparaissent. Les bonus DM sont conservés.</small>
+            </div>
         </div>
         
         <div class="rattrapage-grid" id="resit-list"></div>
         
         <div class="prediction-box">
-            <div style="margin-bottom: 15px; font-size:1.1rem; text-align:center; font-weight:bold;">Objectifs de Validation</div>
+            <div style="margin-bottom: 15px; font-size:1.1rem; text-align:center; font-weight:bold;">Objectifs de Validation (Notes à obtenir)</div>
             <div class="prediction-wrapper">
                 <div class="pred-col" style="border-color: rgba(255,255,255,0.4); background:rgba(255,255,255,0.15)">
                     <div class="pred-title pred-main-title">🎯 Année Complète</div>
@@ -175,7 +226,7 @@
     </div>
     
     <div style="text-align:center; margin-top:30px; margin-bottom: 20px;">
-        <button class="reset-btn" onclick="resetData()"><i class="fas fa-trash"></i> Effacer toutes les données et recommencer</button>
+        <button class="reset-btn" onclick="resetData()"><i class="fas fa-trash"></i> Effacer les données de ce cursus</button>
     </div>
     
     <div style="font-size: 0.75rem; color: #999; text-align: center; margin-top: 30px; line-height: 1.4;">
@@ -190,33 +241,129 @@
 </div>
 
 <script>
-    const SUBJECTS = [
-        { id: 's1_p1', sem: 1, name: "Droit des Personnes", coef: 7, isMajor: true, bonusMax: 1.5 },
-        { id: 's1_p2', sem: 1, name: "Droit Constitutionnel S1", coef: 7, isMajor: true, bonusMax: 1.5 },
-        { id: 's1_p3', sem: 1, name: "Relations Internationales", coef: 4, isMajor: false },
-        { id: 's1_p4', sem: 1, name: "Introduction Droit", coef: 5, isMajor: false },
-        { id: 's1_p5', sem: 1, name: "Hist. des Instit. après 1789", coef: 5, isMajor: false },
-        
-        { id: 's2_p1', sem: 2, name: "Droit de la famille", coef: 7, isMajor: true, bonusMax: 1.5 },
-        { id: 's2_p2', sem: 2, name: "Droit Constitutionnel S2", coef: 7, isMajor: true, bonusMax: 1.5 },
-        { id: 's2_p3', sem: 2, name: "Intro Gds Syst. Jur.", coef: 4, isMajor: false },
-        { id: 's2_p4', sem: 2, name: "Hist. des Instit. avant 1789", coef: 4, isMajor: false }
-    ];
+    // ==========================================
+    // 1. CONFIGURATION DES CURSUS (DATA)
+    // ==========================================
+    const CURRICULUMS = {
+        'l1_ead': {
+            name: "Licence 1 - Droit EAD",
+            subjects: [
+                { id: 's1_p1', sem: 1, name: "Droit des Personnes", coef: 7, isMajor: true, bonusMax: 1.5 },
+                { id: 's1_p2', sem: 1, name: "Droit Constitutionnel S1", coef: 7, isMajor: true, bonusMax: 1.5 },
+                { id: 's1_p3', sem: 1, name: "Relations Internationales", coef: 4, isMajor: false },
+                { id: 's1_p4', sem: 1, name: "Introduction Droit", coef: 5, isMajor: false },
+                { id: 's1_p5', sem: 1, name: "Hist. des Instit. après 1789", coef: 5, isMajor: false },
+                
+                { id: 's2_p1', sem: 2, name: "Droit de la famille", coef: 7, isMajor: true, bonusMax: 1.5 },
+                { id: 's2_p2', sem: 2, name: "Droit Constitutionnel S2", coef: 7, isMajor: true, bonusMax: 1.5 },
+                { id: 's2_p3', sem: 2, name: "Intro Gds Syst. Jur.", coef: 4, isMajor: false },
+                { id: 's2_p4', sem: 2, name: "Hist. des Instit. avant 1789", coef: 4, isMajor: false }
+            ]
+        },
+        'l2_ead': {
+            name: "Licence 2 - Droit EAD",
+            subjects: [
+                // Remplacer par les vraies matières de L2
+                { id: 'l2_s1_p1', sem: 1, name: "Droit des contrats", coef: 7, isMajor: true, bonusMax: 1.5 },
+                { id: 'l2_s1_p2', sem: 1, name: "Droit administratif 1", coef: 7, isMajor: true, bonusMax: 1.5 },
+                { id: 'l2_s1_p3', sem: 1, name: "Finances publiques", coef: 5, isMajor: false },
+                { id: 'l2_s1_p4', sem: 1, name: "Droit pénal général", coef: 5, isMajor: false },
+                { id: 'l2_s1_p5', sem: 1, name: "Introduction au droit comparé", coef: 3, isMajor: false },
+                { id: 'l2_s1_p4', sem: 1, name: "Institutions européennes", coef: 5, isMajor: false },
+                { id: 'l2_s2_p1', sem: 2, name: "Droit de la responsabilité civile", coef: 7, isMajor: true, bonusMax: 1.5 },
+                { id: 'l2_s2_p2', sem: 2, name: "Droit administratif 2", coef: 7, isMajor: true, bonusMax: 1.5 },
+                { id: 'l2_s2_p3', sem: 2, name: "Droit des affaires", coef: 5, isMajor: false },
+                { id: 'l2_s2_p4', sem: 2, name: "Droit fiscal", coef: 4, isMajor: false },
+                { id: 'l2_s2_p5', sem: 2, name: "Histoire du droit des obligations", coef: 4, isMajor: false }
+            ]
+        },
+        'l3_ead': {
+            name: "Licence 3 - Droit EAD",
+            subjects: [
+                { id: 'l3_s1_p1', sem: 1, name: "Régime général des obligations", coef: 7, isMajor: true, bonusMax: 1.5 },
+                { id: 'l3_s1_p2', sem: 1, name: "Droit des collectivités territoriales", coef: 7, isMajor: true, bonusMax: 1.5 },
+                { id: 'l3_s1_p3', sem: 1, name: "Droit de l'Union Européenne", coef: 5, isMajor: false },
+                { id: 'l3_s1_p4', sem: 1, name: "Droit des sociétés", coef: 5, isMajor: false },
+                { id: 'l3_s1_p5', sem: 1, name: "Procédures pénales", coef: 5, isMajor: false },
+                { id: 'l3_s1_p6', sem: 1, name: "Histoire des droits de l'Homme", coef: 5, isMajor: false },
+                { id: 'l3_s2_p1', sem: 2, name: "Droit des biens", coef: 7, isMajor: true, bonusMax: 1.5 },
+                { id: 'l3_s2_p2', sem: 2, name: "Droit public des affaires", coef: 7, isMajor: true, bonusMax: 1.5 },
+                { id: 'l3_s2_p3', sem: 2, name: "Droit international public", coef: 5, isMajor: false },
+                { id: 'l3_s2_p4', sem: 2, name: "Droit du travail", coef: 5, isMajor: false },
+                { id: 'l3_s2_p5', sem: 2, name: "Droit des libertés fondamentales", coef: 4, isMajor: false },
+                { id: 'l3_s2_p6', sem: 2, name: "Procédure civile", coef: 4, isMajor: false },
+                { id: 'l3_s2_p6', sem: 2, name: "Anglais juridique", coef: 2, isMajor: false }
+            ]
+        }
+    };
 
-    const STORAGE_KEY = "simu_droit_l1_v2";
+    // ==========================================
+    // 2. ÉTAT ET VARIABLES GLOBALES
+    // ==========================================
+    const BASE_STORAGE_KEY = "simu_droit_v4_";
+    const SELECTED_CURR_KEY = "simu_droit_v4_selected_curriculum";
+    
+    let currentCurriculumId = 'l1_ead'; // Par défaut
+    let activeSubjects = [];
     let currentGrades = {};
+    let currentBonuses = {}; // Pour stocker les bonus acquis
 
+    // ==========================================
+    // 3. INITIALISATION
+    // ==========================================
     window.addEventListener('DOMContentLoaded', () => {
-        init();
+        populateCurriculumSelect();
+        
+        // Charger le dernier cursus sélectionné
+        const savedCurr = localStorage.getItem(SELECTED_CURR_KEY);
+        if(savedCurr && CURRICULUMS[savedCurr]) {
+            currentCurriculumId = savedCurr;
+            document.getElementById('curriculum-select').value = savedCurr;
+        }
+
+        initInterface();
         loadData();
+        
         document.getElementById('loading-msg').style.display = 'none';
         document.getElementById('main-app').style.display = 'block';
         document.getElementById('footer-app').style.display = 'flex';
+        
         calculate();
     });
 
-    function init() {
-        SUBJECTS.forEach(sub => {
+    function populateCurriculumSelect() {
+        const select = document.getElementById('curriculum-select');
+        Object.keys(CURRICULUMS).forEach(key => {
+            const opt = document.createElement('option');
+            opt.value = key;
+            opt.textContent = CURRICULUMS[key].name;
+            select.appendChild(opt);
+        });
+    }
+
+    function changeCurriculum() {
+        const select = document.getElementById('curriculum-select');
+        currentCurriculumId = select.value;
+        localStorage.setItem(SELECTED_CURR_KEY, currentCurriculumId);
+        
+        // Cacher les rattrapages au changement
+        document.getElementById('rattrapage-box').style.display = 'none';
+        
+        initInterface();
+        loadData();
+        calculate();
+    }
+
+    function initInterface() {
+        // Vider les conteneurs
+        document.getElementById('container-s1').innerHTML = '';
+        document.getElementById('container-s2').innerHTML = '';
+        document.getElementById('resit-list').innerHTML = '';
+        
+        activeSubjects = CURRICULUMS[currentCurriculumId].subjects;
+
+        // Générer les matières
+        activeSubjects.forEach(sub => {
             const container = document.getElementById('container-s' + sub.sem);
             if(!container) return; 
 
@@ -260,55 +407,75 @@
             container.appendChild(div);
         });
 
-        // Rattrapages
+        // Générer la liste des rattrapages (cachée par défaut)
         const resitContainer = document.getElementById('resit-list');
-        if(resitContainer) {
-            SUBJECTS.forEach(sub => {
-                const div = document.createElement('div');
-                div.className = 'resit-item';
-                div.id = `resit_item_${sub.id}`; // CHANGEMENT: ID pour cibler l'élément
-                div.innerHTML = `
-                    <input type="checkbox" id="resit_check_${sub.id}">
-                    <div class="resit-info"><strong>${sub.name}</strong> <span style="color:#777;font-size:0.8rem">(Coef ${sub.coef})</span></div>
-                    <input type="number" class="resit-input" id="resit_grade_${sub.id}" placeholder="?" min="0" max="20" disabled style="width:60px; padding:5px;">
-                `;
-                resitContainer.appendChild(div);
-            });
-        }
+        activeSubjects.forEach(sub => {
+            const div = document.createElement('div');
+            div.className = 'resit-item hidden'; // Caché par défaut
+            div.id = `resit_item_${sub.id}`;
+            
+            div.innerHTML = `
+                <input type="checkbox" id="resit_check_${sub.id}">
+                <div class="resit-info">
+                    <strong>${sub.name}</strong> 
+                    <span style="color:#777;font-size:0.8rem">(Coef ${sub.coef})</span>
+                    <span id="resit_bonus_display_${sub.id}" class="resit-bonus-display"></span>
+                </div>
+                <input type="number" class="resit-input" id="resit_grade_${sub.id}" placeholder="Note" min="0" max="20" disabled style="width:70px; padding:5px;">
+            `;
+            resitContainer.appendChild(div);
+        });
 
-        document.body.addEventListener('input', (e) => {
-            if(e.target.tagName === 'INPUT') {
-                saveData();
-                if(e.target.id.includes('resit')) calculateRattrapage();
-                else calculate();
+        setupEventListeners();
+    }
+
+    function setupEventListeners() {
+        // Enlever les anciens écouteurs pour éviter les doublons n'est pas nécessaire car on recrée le DOM,
+        // mais on attache les événements au body qui délègue.
+        // On s'assure juste de ne pas ajouter plusieurs fois l'écouteur global window (fait 1 fois au load).
+    }
+
+    // Écouteurs globaux (délégation)
+    document.body.addEventListener('input', (e) => {
+        if(e.target.tagName === 'INPUT') {
+            saveData();
+            if(e.target.id.includes('resit')) calculateRattrapage();
+            else calculate();
+        }
+    });
+    
+    document.body.addEventListener('change', (e) => {
+        if(e.target.type === 'checkbox' && e.target.id.includes('resit_check')) {
+            const id = e.target.id.replace('resit_check_', '');
+            const input = document.getElementById('resit_grade_' + id);
+            if(input) {
+                input.disabled = !e.target.checked;
+                if(!e.target.checked) input.value = '';
             }
-        });
-        
-        document.body.addEventListener('change', (e) => {
-            if(e.target.type === 'checkbox' && e.target.id.includes('resit_check')) {
-                const id = e.target.id.replace('resit_check_', '');
-                const input = document.getElementById('resit_grade_' + id);
-                if(input) {
-                    input.disabled = !e.target.checked;
-                    if(!e.target.checked) input.value = '';
-                }
-                saveData();
-                calculateRattrapage();
-            }
-        });
+            saveData();
+            calculateRattrapage();
+        }
+    });
+
+    // ==========================================
+    // 4. SAUVEGARDE ET CHARGEMENT
+    // ==========================================
+    function getStorageKey() {
+        return BASE_STORAGE_KEY + currentCurriculumId;
     }
 
     function saveData() {
         const state = {};
+        // On ne sauvegarde que les inputs présents dans le DOM actuel
         document.querySelectorAll('input').forEach(el => {
             if(el.type === 'checkbox') state[el.id] = el.checked;
             else state[el.id] = el.value;
         });
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        localStorage.setItem(getStorageKey(), JSON.stringify(state));
     }
 
     function loadData() {
-        const saved = localStorage.getItem(STORAGE_KEY);
+        const saved = localStorage.getItem(getStorageKey());
         if(!saved) return;
         try {
             const state = JSON.parse(saved);
@@ -317,6 +484,7 @@
                 if(el) {
                     if(el.type === 'checkbox') {
                         el.checked = state[key];
+                        // Gestion UI état checkbox
                         if(key.includes('resit_check_')) {
                             const subId = key.replace('resit_check_', '');
                             const inp = document.getElementById('resit_grade_' + subId);
@@ -327,30 +495,44 @@
                     }
                 }
             });
+            
             const hasResit = Object.keys(state).some(k => k.includes('resit_check') && state[k] === true);
             if(hasResit) document.getElementById('rattrapage-box').style.display = 'block';
-        } catch(e) {}
+            
+        } catch(e) { console.error("Erreur load", e); }
     }
 
     function resetData() {
-        if(confirm("Effacer tout ?")) {
-            localStorage.removeItem(STORAGE_KEY);
-            location.reload();
+        if(confirm("Voulez-vous vraiment effacer les notes pour " + CURRICULUMS[currentCurriculumId].name + " ?")) {
+            localStorage.removeItem(getStorageKey());
+            initInterface(); // Recharge l'interface à zéro
+            calculate();
         }
     }
 
+    // ==========================================
+    // 5. CALCULS
+    // ==========================================
     function calculate() {
         currentGrades = {};
-        SUBJECTS.forEach(sub => {
+        currentBonuses = {};
+
+        activeSubjects.forEach(sub => {
             const gEl = document.getElementById('grade_' + sub.id);
             const bEl = document.getElementById('bonus_' + sub.id);
             let val = 0;
+            let bonus = 0;
             let hasInput = false;
 
             if (gEl && gEl.value !== '') { val += parseFloat(gEl.value); hasInput = true; }
-            if (bEl && bEl.value !== '') { val += parseFloat(bEl.value); }
+            if (bEl && bEl.value !== '') { 
+                bonus = parseFloat(bEl.value);
+                val += bonus; 
+            }
             if(val > 20) val = 20; 
+
             if(hasInput) currentGrades[sub.id] = val;
+            currentBonuses[sub.id] = bonus; // Stocker le bonus pour les rattrapages
 
             const disp = document.getElementById('total_' + sub.id);
             if(disp) {
@@ -364,6 +546,10 @@
             }
         });
 
+        // Mise à jour visuelle des rattrapages (Cacher/Montrer)
+        updateResitVisibility();
+
+        // Calculs Stats
         const s1 = getSemStats(1);
         const s2 = getSemStats(2);
         const year = getGlobalStats();
@@ -387,9 +573,43 @@
         if(document.getElementById('rattrapage-box').style.display === 'block') calculateRattrapage();
     }
 
+    function updateResitVisibility() {
+        activeSubjects.forEach(sub => {
+            const note = currentGrades[sub.id] || 0;
+            const resitItem = document.getElementById(`resit_item_${sub.id}`);
+            const checkBox = document.getElementById(`resit_check_${sub.id}`);
+            const resitInput = document.getElementById(`resit_grade_${sub.id}`);
+            const bonusDisplay = document.getElementById(`resit_bonus_display_${sub.id}`);
+            
+            if (resitItem) {
+                // Afficher le bonus reporté s'il existe
+                const bonus = currentBonuses[sub.id] || 0;
+                if(bonus > 0) {
+                    bonusDisplay.textContent = `(+ ${bonus} Bonus)`;
+                } else {
+                    bonusDisplay.textContent = '';
+                }
+
+                // Logique d'affichage : Si Note < 10, on propose le rattrapage
+                if (note >= 10) {
+                    resitItem.classList.add('hidden');
+                    // Désactiver si caché pour ne pas fausser le calcul
+                    if (checkBox.checked) {
+                        checkBox.checked = false;
+                        resitInput.value = '';
+                        resitInput.disabled = true;
+                        saveData();
+                    }
+                } else {
+                    resitItem.classList.remove('hidden');
+                }
+            }
+        });
+    }
+
     function getSemStats(sem) {
         let tPts = 0, tCoef = 0, mPts = 0, mCoef = 0;
-        SUBJECTS.filter(s => s.sem === sem).forEach(s => {
+        activeSubjects.filter(s => s.sem === sem).forEach(s => {
             const note = currentGrades[s.id] || 0;
             tPts += note * s.coef;
             tCoef += s.coef;
@@ -404,7 +624,7 @@
 
     function getGlobalStats() {
         let tPts = 0, tCoef = 0, mPts = 0, mCoef = 0;
-        SUBJECTS.forEach(s => {
+        activeSubjects.forEach(s => {
             const note = currentGrades[s.id] || 0;
             tPts += note * s.coef;
             tCoef += s.coef;
@@ -438,22 +658,24 @@
         const box = document.getElementById('rattrapage-box');
         const isHidden = box.style.display === 'none' || box.style.display === '';
         box.style.display = isHidden ? 'block' : 'none';
-        if(isHidden) calculateRattrapage();
+        
+        if(isHidden) {
+            updateResitVisibility();
+            calculateRattrapage();
+        }
     }
 
     function calculateRattrapage() {
-        // Initialisation des compteurs
         let stats = {
             year: { acqGen: 0, acqMaj: 0, missGen: 0, missMaj: 0, manGen: 0, manMaj: 0 },
             s1: { acqGen: 0, acqMaj: 0, missGen: 0, missMaj: 0, manGen: 0, manMaj: 0, totGen: 0, totMaj: 0 },
             s2: { acqGen: 0, acqMaj: 0, missGen: 0, missMaj: 0, manGen: 0, manMaj: 0, totGen: 0, totMaj: 0 }
         };
 
-        SUBJECTS.forEach(sub => {
+        activeSubjects.forEach(sub => {
             const isResit = document.getElementById('resit_check_' + sub.id).checked;
             const scope = sub.sem === 1 ? 's1' : 's2';
             
-            // Compter les Coefs Totaux du semestre (pour cibles)
             stats[scope].totGen += sub.coef;
             if(sub.isMajor) stats[scope].totMaj += sub.coef;
 
@@ -472,9 +694,13 @@
             } else {
                 // Matière repassée
                 const inp = document.getElementById('resit_grade_' + sub.id);
+                const bonus = currentBonuses[sub.id] || 0; // Récupère le bonus DM
+
                 if(inp && inp.value !== '') {
-                    // Note saisie manuellement
-                    const note = parseFloat(inp.value);
+                    // Note saisie manuellement + Bonus
+                    let note = parseFloat(inp.value) + bonus;
+                    if(note > 20) note = 20;
+
                     const pts = note * sub.coef;
                     
                     stats.year.manGen += pts;
@@ -485,7 +711,21 @@
                         stats[scope].manMaj += pts;
                     }
                 } else {
-                    // Note inconnue (ce qu'on cherche)
+                    // Note inconnue : Le 'manque à gagner' inclut le fait qu'on a déjà le bonus
+                    // Mathématiquement : NoteFinale = Exam + Bonus.
+                    // Donc Points = (Exam + Bonus) * Coef
+                    // Points = (Exam * Coef) + (Bonus * Coef)
+                    // On considère le bonus comme "Acquis" dans le calcul des points manquants pour simplifier
+                    
+                    const pointsBonus = bonus * sub.coef;
+                    stats.year.acqGen += pointsBonus; // On ajoute les points du bonus aux points "acquis"
+                    stats[scope].acqGen += pointsBonus;
+                    if(sub.isMajor) {
+                        stats.year.acqMaj += pointsBonus;
+                        stats[scope].acqMaj += pointsBonus;
+                    }
+
+                    // Le coefficient reste entier à combler par la note d'examen pure
                     stats.year.missGen += sub.coef;
                     stats[scope].missGen += sub.coef;
                     
@@ -497,7 +737,6 @@
             }
         });
 
-        // Calculs des cibles (Globales récupérées via stats.s1/s2 pour cohérence)
         const globals = getGlobalStats();
         const targetGenYear = 10 * globals.totalCoef;
         const targetMajYear = 10 * globals.majCoef;
@@ -508,7 +747,6 @@
         const targetGenS2 = 10 * stats.s2.totGen;
         const targetMajS2 = 10 * stats.s2.totMaj;
 
-        // Fonction d'affichage
         const renderBlock = (targetGen, acqGen, manGen, missCoefGen, targetMaj, acqMaj, manMaj, missCoefMaj) => {
             const gapGen = targetGen - (acqGen + manGen);
             const gapMaj = targetMaj - (acqMaj + manMaj);
@@ -524,7 +762,6 @@
             return formatLine(gapMaj, missCoefMaj, "Majeures") + formatLine(gapGen, missCoefGen, "Générale");
         };
 
-        // Injection HTML
         document.getElementById('resit-target-year-maj').innerHTML = renderBlock(
             targetGenYear, stats.year.acqGen, stats.year.manGen, stats.year.missGen,
             targetMajYear, stats.year.acqMaj, stats.year.manMaj, stats.year.missMaj
@@ -544,9 +781,3 @@
 
 </body>
 </html>
-
-
-
-
-
-
