@@ -131,17 +131,14 @@ function initInterface() {
         resitContainer.appendChild(resitDiv);
     });
 
-    // Mettre à jour l'affichage selon si on est en L1 (Bloc Majeure) ou L2/L3 (Juste moyenne)
     updateVisibilityBasedOnCurriculum();
 }
 
-// Fonction pour cacher/montrer les lignes "Moyenne Majeures" selon le cursus
 function updateVisibilityBasedOnCurriculum() {
     const hasMajorBlock = CURRICULUMS[currentCurriculumId].hasMajorBlock;
     
-    // Liste des éléments DOM liés aux moyennes majeures
     const majorElements = [
-        document.getElementById('row-maj-s1'), // On va ajouter ces ID dans le HTML
+        document.getElementById('row-maj-s1'),
         document.getElementById('row-maj-s2'),
         document.getElementById('footer-maj-stat'),
         document.getElementById('resit-maj-col-year'),
@@ -161,8 +158,8 @@ function updateVisibilityBasedOnCurriculum() {
 document.body.addEventListener('input', (e) => {
     if(e.target.tagName === 'INPUT') {
         saveData();
-        if(e.target.id.includes('resit')) calculateRattrapage();
-        else calculate();
+        // Peu importe où on tape, on recalcule tout (y compris les moyennes globales)
+        calculate();
     }
 });
 
@@ -175,7 +172,7 @@ document.body.addEventListener('change', (e) => {
             if(!e.target.checked) input.value = '';
         }
         saveData();
-        calculateRattrapage();
+        calculate();
     }
 });
 
@@ -232,6 +229,7 @@ function resetData() {
 // 3. MOTEUR DE CALCUL
 // ==========================================
 function calculate() {
+    // 1. Lire les notes de Session 1
     currentGrades = {};
     currentBonuses = {};
 
@@ -266,6 +264,7 @@ function calculate() {
 
     updateResitVisibility();
 
+    // 2. Calculer les moyennes (en prenant en compte les rattrapages si saisis)
     const s1 = getSemStats(1);
     const s2 = getSemStats(2);
     const year = getGlobalStats();
@@ -277,15 +276,13 @@ function calculate() {
     document.getElementById('year-maj').textContent = year.majAvg.toLocaleString('fr-FR', {minimumFractionDigits:3, maximumFractionDigits:3});
     document.getElementById('year-gen').textContent = year.genAvg.toLocaleString('fr-FR', {minimumFractionDigits:3, maximumFractionDigits:3});
 
-    // Validation Annuelle selon la règle du cursus
+    // Validation Annuelle
     const hasMajorBlock = CURRICULUMS[currentCurriculumId].hasMajorBlock;
     let yearValid = false;
 
     if (hasMajorBlock) {
-        // Règle L1 : Moyenne Générale >= 10 ET Moyenne Majeure >= 10
         yearValid = (year.majAvg >= 10 && year.genAvg >= 10);
     } else {
-        // Règle L2/L3 : Moyenne Générale >= 10 uniquement
         yearValid = (year.genAvg >= 10);
     }
 
@@ -298,7 +295,28 @@ function calculate() {
         yStat.className = "annual-badge bg-danger";
     }
     
-    if(document.getElementById('rattrapage-box').style.display === 'block') calculateRattrapage();
+    // 3. Mettre à jour le module de prédiction (cible)
+    if(document.getElementById('rattrapage-box').style.display === 'block') calculateRattrapagePrediction();
+}
+
+/**
+ * NOUVEAU : Récupère la note effective (Session 1 OU Rattrapage si saisi)
+ * Cette fonction est utilisée par les calculs de moyenne
+ */
+function getEffectiveNote(sub) {
+    const resitCheck = document.getElementById('resit_check_' + sub.id);
+    const resitInput = document.getElementById('resit_grade_' + sub.id);
+    
+    // Si la case rattrapage est cochée ET qu'une note est entrée
+    if (resitCheck && resitCheck.checked && resitInput && resitInput.value !== '') {
+        const bonus = currentBonuses[sub.id] || 0;
+        let note = parseFloat(resitInput.value) + bonus;
+        if (note > 20) note = 20;
+        return note;
+    }
+    
+    // Sinon on retourne la note de session 1 (ou 0 par défaut)
+    return currentGrades[sub.id] || 0;
 }
 
 function updateResitVisibility() {
@@ -332,7 +350,9 @@ function updateResitVisibility() {
 function getSemStats(sem) {
     let tPts = 0, tCoef = 0, mPts = 0, mCoef = 0;
     activeSubjects.filter(s => s.sem === sem).forEach(s => {
-        const note = currentGrades[s.id] || 0;
+        // MODIFIÉ : Utilise la note effective (Session 1 ou Rattrapage)
+        const note = getEffectiveNote(s);
+        
         tPts += note * s.coef;
         tCoef += s.coef;
         if(s.isMajor) { mPts += note * s.coef; mCoef += s.coef; }
@@ -355,7 +375,9 @@ function getSemStats(sem) {
 function getGlobalStats() {
     let tPts = 0, tCoef = 0, mPts = 0, mCoef = 0;
     activeSubjects.forEach(s => {
-        const note = currentGrades[s.id] || 0;
+        // MODIFIÉ : Utilise la note effective
+        const note = getEffectiveNote(s);
+        
         tPts += note * s.coef;
         tCoef += s.coef;
         if(s.isMajor) { mPts += note * s.coef; mCoef += s.coef; }
@@ -390,11 +412,12 @@ function toggleRattrapages() {
     box.style.display = isHidden ? 'block' : 'none';
     if(isHidden) {
         updateResitVisibility();
-        calculateRattrapage();
+        calculateRattrapagePrediction();
     }
 }
 
-function calculateRattrapage() {
+// Renommé pour éviter la confusion avec le calcul principal
+function calculateRattrapagePrediction() {
     let stats = {
         year: { acqGen: 0, acqMaj: 0, missGen: 0, missMaj: 0, manGen: 0, manMaj: 0 },
         s1: { acqGen: 0, acqMaj: 0, missGen: 0, missMaj: 0, manGen: 0, manMaj: 0, totGen: 0, totMaj: 0 },
@@ -409,6 +432,7 @@ function calculateRattrapage() {
         if(sub.isMajor) stats[scope].totMaj += sub.coef;
 
         if(!isResit) {
+            // Ici on utilise la note Session 1 car on n'a pas coché "Repasser"
             const note = currentGrades[sub.id] || 0;
             const pts = note * sub.coef;
             stats.year.acqGen += pts; stats[scope].acqGen += pts;
@@ -418,12 +442,14 @@ function calculateRattrapage() {
             const bonus = currentBonuses[sub.id] || 0;
 
             if(inp && inp.value !== '') {
+                // Si une note de rattrapage est saisie, elle compte comme "manuelle" (acquise via simu)
                 let note = parseFloat(inp.value) + bonus;
                 if(note > 20) note = 20;
                 const pts = note * sub.coef;
                 stats.year.manGen += pts; stats[scope].manGen += pts;
                 if(sub.isMajor) { stats.year.manMaj += pts; stats[scope].manMaj += pts; }
             } else {
+                // Si cochée mais vide, c'est ce qu'on cherche à prédire
                 const pointsBonus = bonus * sub.coef;
                 stats.year.acqGen += pointsBonus; stats[scope].acqGen += pointsBonus;
                 if(sub.isMajor) { stats.year.acqMaj += pointsBonus; stats[scope].acqMaj += pointsBonus; }
@@ -434,10 +460,9 @@ function calculateRattrapage() {
         }
     });
 
-    const globals = getGlobalStats();
+    const globals = getGlobalStats(); // Pour avoir les totaux de coefs
     const hasMajorBlock = CURRICULUMS[currentCurriculumId].hasMajorBlock;
 
-    // Fonction helpers pour le rendu
     const renderBlock = (targetGen, acqGen, manGen, missCoefGen, targetMaj, acqMaj, manMaj, missCoefMaj) => {
         const gapGen = targetGen - (acqGen + manGen);
         const formatLine = (gap, coef, label) => {
@@ -449,8 +474,6 @@ function calculateRattrapage() {
         };
 
         let html = formatLine(gapGen, missCoefGen, "Générale");
-        
-        // Si L1, on ajoute la condition majeure
         if(hasMajorBlock) {
             const gapMaj = targetMaj - (acqMaj + manMaj);
             html = formatLine(gapMaj, missCoefMaj, "Majeures") + html;
@@ -458,7 +481,8 @@ function calculateRattrapage() {
         return html;
     };
 
-    // Calcul des cibles
+    // Calculs cibles basés sur les coefs totaux
+    // Note: globals.totalCoef est constant, peu importe les notes
     const targetGenYear = 10 * globals.totalCoef;
     const targetMajYear = 10 * globals.majCoef;
     const targetGenS1 = 10 * stats.s1.totGen;
