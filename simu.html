@@ -53,9 +53,18 @@
     <div class="card rattrapage-section" id="rattrapage-box">
         <div class="rattrapage-header">
             <i class="fas fa-life-ring fa-lg"></i>
-            <div>
+            <div style="flex: 1;">
                 <strong>Module de Secours</strong><br>
-                <small>Seules les matières non validées (<10) apparaissent. Les bonus DM sont conservés.</small>
+                <small>Seules les matières non validées (&lt;10) apparaissent. Les bonus DM sont conservés.</small>
+            </div>
+            <div class="tooltip-container">
+                <i class="fas fa-info-circle fa-lg tooltip-trigger"></i>
+                <div class="tooltip-text">
+                    <strong>Légende des couleurs des réglettes :</strong><br><br>
+                    🟢 <strong>Vert</strong> : Note suffisante pour valider l'année ou le semestre avec les notes de rattrapage déjà saisies.<br><br>
+                    🟠 <strong>Orange</strong> : Note permettant la validation si les autres matières en attente obtiennent de bonnes notes.<br><br>
+                    🔴 <strong>Rouge</strong> : Validation impossible, même avec 20/20 aux autres matières de rattrapage en attente.
+                </div>
             </div>
         </div>
         

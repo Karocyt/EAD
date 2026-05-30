@@ -97,12 +97,154 @@ input[type="number"]:focus { border-color: var(--primary); outline: none; }
 .rattrapage-header {
     background: #fff3cd; margin: -20px -20px 20px -20px; padding: 15px 20px; border-radius: 6px 6px 0 0; color: #856404; display: flex; align-items: center; gap: 10px;
 }
-.rattrapage-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.rattrapage-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+@media (max-width: 768px) {
+    .rattrapage-grid {
+        grid-template-columns: 1fr;
+    }
+}
 .resit-item {
-    display: flex; align-items: center; gap: 10px; background: #fff; padding: 8px; border: 1px solid #eee; border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: #fff;
+    padding: 15px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.02);
     transition: all 0.3s ease;
 }
-.resit-info { flex: 1; font-size: 0.9rem; }
+.resit-item.active {
+    border-color: var(--warning);
+    box-shadow: 0 4px 12px rgba(243, 156, 18, 0.08);
+}
+.resit-top-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+.resit-info {
+    flex: 1;
+    font-size: 0.95rem;
+}
+.resit-controls-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+}
+
+/* Tooltip styles */
+.tooltip-container {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    margin-left: 10px;
+}
+.tooltip-trigger {
+    color: #856404;
+    opacity: 0.8;
+    transition: opacity 0.2s, transform 0.2s;
+}
+.tooltip-trigger:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+.tooltip-text {
+    visibility: hidden;
+    width: 300px;
+    background-color: var(--secondary);
+    color: #fff;
+    text-align: left;
+    border-radius: 8px;
+    padding: 14px;
+    position: absolute;
+    z-index: 1000;
+    right: 0;
+    top: 130%;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    font-size: 0.8rem;
+    line-height: 1.5;
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+    transform: translateY(5px);
+    font-weight: normal;
+}
+.tooltip-text strong {
+    color: var(--warning);
+}
+.tooltip-container:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Custom premium slider styling */
+input[type="range"].resit-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    flex: 1;
+    height: 8px;
+    border-radius: 4px;
+    background: #e2e8f0;
+    outline: none;
+    transition: opacity 0.2s, background 0.1s;
+}
+input[type="range"].resit-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--secondary);
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: transform 0.1s;
+}
+input[type="range"].resit-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+}
+input[type="range"].resit-slider:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: #e2e8f0 !important;
+}
+input[type="range"].resit-slider:disabled::-webkit-slider-thumb {
+    background: var(--gray);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Precise numerical inputs styling */
+input[type="number"].resit-input {
+    width: 70px;
+    padding: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: center;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: #fff;
+    color: var(--secondary);
+    box-sizing: border-box;
+}
+input[type="number"].resit-input:disabled {
+    background: #f8f9fa;
+    color: var(--gray);
+    border-color: #eee;
+    cursor: not-allowed;
+}
+input[type="number"].resit-input:focus {
+    border-color: var(--secondary);
+    outline: none;
+}
 .resit-bonus-display { font-size: 0.75rem; color: var(--success); font-weight: bold; white-space: nowrap; margin-left: 5px; }
 
 /* Predictions */
@@ -144,3 +286,25 @@ input[type="number"]:focus { border-color: var(--primary); outline: none; }
 .reset-btn:hover { color: var(--danger); }
 
 #loading-msg { text-align: center; padding: 50px; font-size: 1.2rem; color: #666; }
+
+/* Note de session 1 barrée et indicateurs de rattrapage */
+.session1-strikethrough {
+    text-decoration: line-through;
+    opacity: 0.55;
+    font-size: 0.95rem;
+    margin-right: 4px;
+}
+.resit-final-value {
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-left: 4px;
+}
+.resit-pending-badge {
+    color: var(--warning);
+    font-weight: bold;
+    margin-left: 4px;
+    font-size: 1.1rem;
+}
+.text-muted {
+    color: #7f8c8d;
+}

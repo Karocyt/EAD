@@ -120,13 +120,18 @@ function initInterface() {
         resitDiv.id = `resit_item_${sub.id}`;
         
         resitDiv.innerHTML = `
-            <input type="checkbox" id="resit_check_${sub.id}">
-            <div class="resit-info">
-                <strong>${sub.name}</strong> 
-                <span style="color:#777;font-size:0.8rem">(Coef ${sub.coef})</span>
-                <span id="resit_bonus_display_${sub.id}" class="resit-bonus-display"></span>
+            <div class="resit-top-row">
+                <input type="checkbox" id="resit_check_${sub.id}">
+                <div class="resit-info">
+                    <strong>${sub.name}</strong> 
+                    <span style="color:#777;font-size:0.8rem">(Coef ${sub.coef})</span>
+                    <span id="resit_bonus_display_${sub.id}" class="resit-bonus-display"></span>
+                </div>
             </div>
-            <input type="number" class="resit-input" id="resit_grade_${sub.id}" placeholder="Note" min="0" max="20" disabled style="width:70px; padding:5px;">
+            <div class="resit-controls-row">
+                <input type="range" class="resit-slider" id="resit_slider_${sub.id}" min="0" max="20" step="0.25" value="10" disabled>
+                <input type="number" class="resit-input" id="resit_grade_${sub.id}" placeholder="-" min="0" max="20" step="0.25" disabled>
+            </div>
         `;
         resitContainer.appendChild(resitDiv);
     });
@@ -157,8 +162,30 @@ function updateVisibilityBasedOnCurriculum() {
 // Écouteurs globaux
 document.body.addEventListener('input', (e) => {
     if(e.target.tagName === 'INPUT') {
+        const targetId = e.target.id;
+        
+        // Synchronisation Slider -> Input
+        if (targetId.startsWith('resit_slider_')) {
+            const subId = targetId.replace('resit_slider_', '');
+            const input = document.getElementById('resit_grade_' + subId);
+            if (input) {
+                input.value = e.target.value;
+            }
+        }
+        
+        // Synchronisation Input -> Slider
+        if (targetId.startsWith('resit_grade_')) {
+            const subId = targetId.replace('resit_grade_', '');
+            const slider = document.getElementById('resit_slider_' + subId);
+            if (slider && e.target.value !== '') {
+                const val = parseFloat(e.target.value);
+                if (!isNaN(val) && val >= 0 && val <= 20) {
+                    slider.value = val;
+                }
+            }
+        }
+
         saveData();
-        // Peu importe où on tape, on recalcule tout (y compris les moyennes globales)
         calculate();
     }
 });
@@ -167,10 +194,19 @@ document.body.addEventListener('change', (e) => {
     if(e.target.type === 'checkbox' && e.target.id.includes('resit_check')) {
         const id = e.target.id.replace('resit_check_', '');
         const input = document.getElementById('resit_grade_' + id);
-        if(input) {
-            input.disabled = !e.target.checked;
-            if(!e.target.checked) input.value = '';
+        const slider = document.getElementById('resit_slider_' + id);
+        const item = document.getElementById('resit_item_' + id);
+        
+        if (e.target.checked) {
+            if(input) { input.disabled = false; input.value = ''; }
+            if(slider) { slider.disabled = false; slider.value = 10; }
+            if(item) item.classList.add('active');
+        } else {
+            if(input) { input.disabled = true; input.value = ''; }
+            if(slider) { slider.disabled = true; slider.value = 10; }
+            if(item) item.classList.remove('active');
         }
+        
         saveData();
         calculate();
     }
@@ -205,7 +241,14 @@ function loadData() {
                     if(key.includes('resit_check_')) {
                         const subId = key.replace('resit_check_', '');
                         const inp = document.getElementById('resit_grade_' + subId);
+                        const slider = document.getElementById('resit_slider_' + subId);
+                        const item = document.getElementById('resit_item_' + subId);
                         if(inp) inp.disabled = !state[key];
+                        if(slider) slider.disabled = !state[key];
+                        if(item) {
+                            if(state[key]) item.classList.add('active');
+                            else item.classList.remove('active');
+                        }
                     }
                 } else {
                     el.value = state[key];
@@ -252,12 +295,46 @@ function calculate() {
 
         const disp = document.getElementById('total_' + sub.id);
         if(disp) {
-            if(hasInput) {
-                disp.textContent = val.toLocaleString('fr-FR', {maximumFractionDigits:2});
-                disp.className = 'final-note ' + (val >= 10 ? 'text-success' : 'text-danger');
+            const resitCheck = document.getElementById('resit_check_' + sub.id);
+            const isResitActive = resitCheck && resitCheck.checked;
+            
+            if (hasInput) {
+                if (isResitActive) {
+                    const resitInput = document.getElementById('resit_grade_' + sub.id);
+                    const resitValue = resitInput ? resitInput.value : '';
+                    if (resitValue !== '') {
+                        let retakeVal = parseFloat(resitValue) + bonus;
+                        if (retakeVal > 20) retakeVal = 20;
+                        
+                        disp.innerHTML = `
+                            <span class="session1-strikethrough text-muted">${val.toLocaleString('fr-FR', {maximumFractionDigits:2})}</span>
+                            <i class="fas fa-life-ring text-warning" title="Note remplacée par le rattrapage"></i>
+                            <span class="resit-final-value ${retakeVal >= 10 ? 'text-success' : 'text-danger'}">${retakeVal.toLocaleString('fr-FR', {maximumFractionDigits:2})}</span>
+                        `;
+                    } else {
+                        disp.innerHTML = `
+                            <span class="session1-strikethrough text-muted">${val.toLocaleString('fr-FR', {maximumFractionDigits:2})}</span>
+                            <i class="fas fa-life-ring text-warning" title="Rattrapage activé (en attente de note)"></i>
+                            <span class="resit-pending-badge">?</span>
+                        `;
+                    }
+                    disp.className = 'final-note';
+                } else {
+                    disp.textContent = val.toLocaleString('fr-FR', {maximumFractionDigits:2});
+                    disp.className = 'final-note ' + (val >= 10 ? 'text-success' : 'text-danger');
+                }
             } else {
-                disp.textContent = '-';
-                disp.className = 'final-note';
+                if (isResitActive) {
+                    disp.innerHTML = `
+                        <span class="session1-strikethrough text-muted">-</span>
+                        <i class="fas fa-life-ring text-warning" title="Rattrapage activé (en attente de note)"></i>
+                        <span class="resit-pending-badge">?</span>
+                    `;
+                    disp.className = 'final-note';
+                } else {
+                    disp.textContent = '-';
+                    disp.className = 'final-note';
+                }
             }
         }
     });
@@ -296,23 +373,38 @@ function calculate() {
     }
     
     // 3. Mettre à jour le module de prédiction (cible)
-    if(document.getElementById('rattrapage-box').style.display === 'block') calculateRattrapagePrediction();
+    if(document.getElementById('rattrapage-box').style.display === 'block') {
+        calculateRattrapagePrediction();
+        updateAllSlidersColors();
+    }
 }
 
 /**
  * NOUVEAU : Récupère la note effective (Session 1 OU Rattrapage si saisi)
  * Cette fonction est utilisée par les calculs de moyenne
  */
-function getEffectiveNote(sub) {
+function getEffectiveNote(sub, overrides = null) {
     const resitCheck = document.getElementById('resit_check_' + sub.id);
-    const resitInput = document.getElementById('resit_grade_' + sub.id);
     
-    // Si la case rattrapage est cochée ET qu'une note est entrée
-    if (resitCheck && resitCheck.checked && resitInput && resitInput.value !== '') {
-        const bonus = currentBonuses[sub.id] || 0;
-        let note = parseFloat(resitInput.value) + bonus;
-        if (note > 20) note = 20;
-        return note;
+    // Si la case rattrapage est cochée
+    if (resitCheck && resitCheck.checked) {
+        let valStr = '';
+        if (overrides && overrides[sub.id] !== undefined) {
+            valStr = overrides[sub.id] !== null ? String(overrides[sub.id]) : '';
+        } else {
+            const resitInput = document.getElementById('resit_grade_' + sub.id);
+            valStr = resitInput ? resitInput.value : '';
+        }
+        
+        if (valStr !== '') {
+            const bonus = currentBonuses[sub.id] || 0;
+            let note = parseFloat(valStr) + bonus;
+            if (note > 20) note = 20;
+            return note;
+        }
+        
+        // Si cochée mais vide (en attente), on retourne la note de session 1
+        return currentGrades[sub.id] || 0;
     }
     
     // Sinon on retourne la note de session 1 (ou 0 par défaut)
@@ -324,6 +416,7 @@ function updateResitVisibility() {
         const note = currentGrades[sub.id] || 0;
         const resitItem = document.getElementById(`resit_item_${sub.id}`);
         const checkBox = document.getElementById(`resit_check_${sub.id}`);
+        const resitSlider = document.getElementById(`resit_slider_${sub.id}`);
         const resitInput = document.getElementById(`resit_grade_${sub.id}`);
         const bonusDisplay = document.getElementById(`resit_bonus_display_${sub.id}`);
         
@@ -336,8 +429,11 @@ function updateResitVisibility() {
                 resitItem.classList.add('hidden');
                 if (checkBox.checked) {
                     checkBox.checked = false;
-                    resitInput.value = '';
-                    resitInput.disabled = true;
+                    if (resitInput) resitInput.value = '';
+                    if (resitSlider) resitSlider.value = 10;
+                    if (resitInput) resitInput.disabled = true;
+                    if (resitSlider) resitSlider.disabled = true;
+                    resitItem.classList.remove('active');
                     saveData();
                 }
             } else {
@@ -347,11 +443,11 @@ function updateResitVisibility() {
     });
 }
 
-function getSemStats(sem) {
+function getSemStats(sem, overrides = null) {
     let tPts = 0, tCoef = 0, mPts = 0, mCoef = 0;
     activeSubjects.filter(s => s.sem === sem).forEach(s => {
-        // MODIFIÉ : Utilise la note effective (Session 1 ou Rattrapage)
-        const note = getEffectiveNote(s);
+        // MODIFIÉ : Utilise la note effective (Session 1 ou Rattrapage, avec overrides éventuels)
+        const note = getEffectiveNote(s, overrides);
         
         tPts += note * s.coef;
         tCoef += s.coef;
@@ -372,11 +468,11 @@ function getSemStats(sem) {
     return { gen: genAvg, maj: majAvg, isValid: isValid };
 }
 
-function getGlobalStats() {
+function getGlobalStats(overrides = null) {
     let tPts = 0, tCoef = 0, mPts = 0, mCoef = 0;
     activeSubjects.forEach(s => {
-        // MODIFIÉ : Utilise la note effective
-        const note = getEffectiveNote(s);
+        // MODIFIÉ : Utilise la note effective avec overrides éventuels
+        const note = getEffectiveNote(s, overrides);
         
         tPts += note * s.coef;
         tCoef += s.coef;
@@ -413,6 +509,7 @@ function toggleRattrapages() {
     if(isHidden) {
         updateResitVisibility();
         calculateRattrapagePrediction();
+        updateAllSlidersColors();
     }
 }
 
@@ -504,4 +601,119 @@ function calculateRattrapagePrediction() {
         targetGenS2, stats.s2.acqGen, stats.s2.manGen, stats.s2.missGen,
         targetMajS2, stats.s2.acqMaj, stats.s2.manMaj, stats.s2.missMaj
     );
+}
+
+/**
+ * Calcule dichotomiquement la note de rattrapage minimale requise pour valider
+ * le semestre ou l'année, à partir d'un ensemble de notes d'overrides.
+ */
+function findThreshold(subId, overrides) {
+    const sub = activeSubjects.find(s => s.id === subId);
+    if (!sub) return 20.0;
+    
+    // Fonction test pour vérifier si la note testGrade permet la validation
+    const checkValid = (testGrade) => {
+        const testOverrides = { ...overrides, [subId]: testGrade };
+        const s1 = getSemStats(1, testOverrides);
+        const s2 = getSemStats(2, testOverrides);
+        const year = getGlobalStats(testOverrides);
+        
+        const semStats = sub.sem === 1 ? s1 : s2;
+        const hasMajorBlock = CURRICULUMS[currentCurriculumId].hasMajorBlock;
+        const yearValid = hasMajorBlock ? (year.majAvg >= 10 && year.genAvg >= 10) : (year.genAvg >= 10);
+        
+        return semStats.isValid || yearValid;
+    };
+    
+    // Si la validation est possible même avec un 0/20
+    if (checkValid(0)) return 0.0;
+    
+    // Si la validation est impossible même avec un 20/20
+    if (!checkValid(20)) return 20.0;
+    
+    // Recherche dichotomique entre 0 et 20
+    let low = 0.0;
+    let high = 20.0;
+    for (let i = 0; i < 11; i++) { // 11 itérations donne une précision de 20 / 2048 ~= 0.01 pt
+        const mid = (low + high) / 2;
+        if (checkValid(mid)) {
+            high = mid;
+        } else {
+            low = mid;
+        }
+    }
+    return high;
+}
+
+/**
+ * Calcule les seuils pour chaque matière de rattrapage cochée et applique
+ * dynamiquement le dégradé linéaire de fond sur la piste du slider.
+ */
+function updateAllSlidersColors() {
+    // 1. Identifier les notes déjà saisies et celles en attente (pending)
+    const retakeValues = {};
+    const pendingSubjects = new Set();
+    
+    activeSubjects.forEach(s => {
+        const check = document.getElementById('resit_check_' + s.id);
+        const inp = document.getElementById('resit_grade_' + s.id);
+        if (check && check.checked) {
+            if (inp && inp.value !== '') {
+                retakeValues[s.id] = parseFloat(inp.value);
+            } else {
+                pendingSubjects.add(s.id);
+            }
+        }
+    });
+    
+    // 2. Pour chaque matière active, calculer les seuils T_orange et T_green
+    activeSubjects.forEach(sub => {
+        const check = document.getElementById('resit_check_' + sub.id);
+        if (!check || !check.checked) return;
+        
+        // Scénario Optimiste : les autres rattrapages en attente obtiennent 20.0
+        const optimisticOverrides = {};
+        activeSubjects.forEach(s => {
+            const sCheck = document.getElementById('resit_check_' + s.id);
+            if (sCheck && sCheck.checked) {
+                if (s.id === sub.id) {
+                    // Note de test
+                } else if (pendingSubjects.has(s.id)) {
+                    optimisticOverrides[s.id] = 20.0;
+                } else {
+                    optimisticOverrides[s.id] = retakeValues[s.id];
+                }
+            }
+        });
+        
+        // Scénario Pessimiste : les autres rattrapages en attente obtiennent 0.0
+        const pessimisticOverrides = {};
+        activeSubjects.forEach(s => {
+            const sCheck = document.getElementById('resit_check_' + s.id);
+            if (sCheck && sCheck.checked) {
+                if (s.id === sub.id) {
+                    // Note de test
+                } else if (pendingSubjects.has(s.id)) {
+                    pessimisticOverrides[s.id] = 0.0;
+                } else {
+                    pessimisticOverrides[s.id] = retakeValues[s.id];
+                }
+            }
+        });
+        
+        const T_orange = findThreshold(sub.id, optimisticOverrides);
+        const T_green = findThreshold(sub.id, pessimisticOverrides);
+        
+        // 3. Mettre à jour l'apparence de la piste du slider en dégradé
+        const slider = document.getElementById('resit_slider_' + sub.id);
+        if (slider) {
+            const pOrange = (T_orange / 20) * 100;
+            const pGreen = (T_green / 20) * 100;
+            
+            slider.style.background = `linear-gradient(to right, 
+                var(--danger) 0%, var(--danger) ${pOrange}%, 
+                var(--warning) ${pOrange}%, var(--warning) ${pGreen}%, 
+                var(--success) ${pGreen}%, var(--success) 100%)`;
+        }
+    });
 }
