@@ -298,39 +298,35 @@ function calculate() {
             const resitCheck = document.getElementById('resit_check_' + sub.id);
             const isResitActive = resitCheck && resitCheck.checked;
             
-            if (hasInput) {
-                if (isResitActive) {
-                    const resitInput = document.getElementById('resit_grade_' + sub.id);
-                    const resitValue = resitInput ? resitInput.value : '';
-                    if (resitValue !== '') {
-                        let retakeVal = parseFloat(resitValue) + bonus;
-                        if (retakeVal > 20) retakeVal = 20;
-                        
-                        disp.innerHTML = `
-                            <span class="session1-strikethrough text-muted">${val.toLocaleString('fr-FR', {maximumFractionDigits:2})}</span>
-                            <i class="fas fa-life-ring text-warning" title="Note remplacée par le rattrapage"></i>
-                            <span class="resit-final-value ${retakeVal >= 10 ? 'text-success' : 'text-danger'}">${retakeVal.toLocaleString('fr-FR', {maximumFractionDigits:2})}</span>
-                        `;
-                    } else {
-                        disp.innerHTML = `
-                            <span class="session1-strikethrough text-muted">${val.toLocaleString('fr-FR', {maximumFractionDigits:2})}</span>
-                            <i class="fas fa-life-ring text-warning" title="Rattrapage activé (en attente de note)"></i>
-                            <span class="resit-pending-badge">?</span>
-                        `;
-                    }
-                    disp.className = 'final-note';
-                } else {
-                    disp.textContent = val.toLocaleString('fr-FR', {maximumFractionDigits:2});
-                    disp.className = 'final-note ' + (val >= 10 ? 'text-success' : 'text-danger');
-                }
-            } else {
-                if (isResitActive) {
+            if (isResitActive) {
+                const resitInput = document.getElementById('resit_grade_' + sub.id);
+                const resitValue = resitInput ? resitInput.value : '';
+                
+                // Si la note de session 1 n'est pas saisie, on considère un zéro (plus bonus éventuel)
+                const displayVal1 = hasInput ? val : (0 + bonus);
+                const displayVal1Str = displayVal1.toLocaleString('fr-FR', {minimumFractionDigits: 1, maximumFractionDigits: 2});
+                
+                if (resitValue !== '') {
+                    let retakeVal = parseFloat(resitValue) + bonus;
+                    if (retakeVal > 20) retakeVal = 20;
+                    
                     disp.innerHTML = `
-                        <span class="session1-strikethrough text-muted">-</span>
+                        <span class="session1-strikethrough text-muted">${displayVal1Str}</span>
+                        <i class="fas fa-life-ring text-warning" title="Note remplacée par le rattrapage"></i>
+                        <span class="resit-final-value ${retakeVal >= 10 ? 'text-success' : 'text-danger'}">${retakeVal.toLocaleString('fr-FR', {minimumFractionDigits: 1, maximumFractionDigits: 2})}</span>
+                    `;
+                } else {
+                    disp.innerHTML = `
+                        <span class="session1-strikethrough text-muted">${displayVal1Str}</span>
                         <i class="fas fa-life-ring text-warning" title="Rattrapage activé (en attente de note)"></i>
                         <span class="resit-pending-badge">?</span>
                     `;
-                    disp.className = 'final-note';
+                }
+                disp.className = 'final-note';
+            } else {
+                if (hasInput) {
+                    disp.textContent = val.toLocaleString('fr-FR', {minimumFractionDigits: 1, maximumFractionDigits: 2});
+                    disp.className = 'final-note ' + (val >= 10 ? 'text-success' : 'text-danger');
                 } else {
                     disp.textContent = '-';
                     disp.className = 'final-note';
